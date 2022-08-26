@@ -12,6 +12,7 @@
   - [[#org-mode-keybindings][Org mode keybindings]]
   - [[#files-keybindings][Files keybindings]]
   - [[#windows-keybindings][Windows keybindings]]
+  - [[#dired-keybindings][Dired keybindings]]
   - [[#buffers-and-bookmarks][Buffers and bookmarks]]
   - [[#registers-keybindings][Registers keybindings]]
   - [[#ehell-bindings][Ehell bindings]]
@@ -35,6 +36,7 @@
 - [[#projectile][PROJECTILE]]
 - [[#vertico][VERTICO]]
 - [[#eshell][ESHELL]]
+- [[#vterm][VTERM]]
 - [[#org-mode][ORG MODE]]
   - [[#basic][Basic]]
   - [[#table-of-content][Table of content]]
@@ -135,6 +137,14 @@
      "w <right>" '(winner-redo :which-key "Winner redo"))
 #+end_src
 
+** Dired keybindings
+#+begin_src emacs-lisp
+(nvmap :states '(normal visual) :keymaps 'override :prefix "SPC"
+               "d d" '(dired :which-key "Open dired")
+               "d j" '(dired-jump :which-key "Dired jump to current")
+               "d p" '(peep-dired :which-key "Peep-dired"))
+#+end_src
+
 ** Buffers and bookmarks
 #+begin_src emacs-lisp
 (nvmap :prefix "SPC"
@@ -176,16 +186,16 @@
 (use-package dashboard
   :ensure t
   :init      ;; tweak dashboard config before loading it
-  ;;(setq dashboard-set-heading-icons t)
-  ;;(setq dashboard-set-file-icons t)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
   (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
   (setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
   ;;(setq dashboard-startup-banner "~/.emacs.d/emacs-dash.png")  ;; use custom image as banner
   (setq dashboard-center-content nil) ;; set to 't' for centered content
-  (setq dashboard-items '((recents . 5)
+  (setq dashboard-items '((recents . 7)
 			  (agenda . 5 )
-			  (bookmarks . 3)
-			  (projects . 3)
+			  (bookmarks . 5)
+			  (projects . 5)
 			  (registers . 3)))
   :config
   (dashboard-setup-startup-hook)
@@ -262,8 +272,9 @@
 
 ** ICONS
 #+begin_src emacs-lisp
-  ;;(use-package all-the-icons
-  ;;  :if (display-graphic-p))
+(use-package all-the-icons
+  :ensure t
+  :if (display-graphic-p))
 #+end_src
 
 ** THEME
@@ -421,9 +432,9 @@
 * PROJECTILE
 #+begin_src emacs-lisp
 (use-package projectile
-  :ensure t
+ :ensure t
   :init
-  ;;(projectile-mode +1)
+  (projectile-mode +1)
   ;;:bind (:map projectile-mode-map
   ;;            ("s-p" . projectile-command-map)
   ;;            ("C-c p" . projectile-command-map))
@@ -503,6 +514,15 @@
       eshell-scroll-to-bottom-on-input t
       eshell-destroy-buffer-when-process-dies t
       eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
+#+end_src
+
+
+* VTERM
+#+begin_src emacs-lisp
+(use-package vterm
+  :ensure t)
+(setq shell-file-name "/bin/zsh"
+      vterm-max-scrollback 5000)
 #+end_src
 
 
