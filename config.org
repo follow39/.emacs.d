@@ -13,6 +13,7 @@
   - [[#files-keybindings][Files keybindings]]
   - [[#windows-keybindings][Windows keybindings]]
   - [[#dired-keybindings][Dired keybindings]]
+  - [[#neotree-keybindings][Neotree keybindings]]
   - [[#buffers-and-bookmarks][Buffers and bookmarks]]
   - [[#registers-keybindings][Registers keybindings]]
   - [[#ehell-bindings][Ehell bindings]]
@@ -40,9 +41,12 @@
 - [[#org-mode][ORG MODE]]
   - [[#basic][Basic]]
   - [[#table-of-content][Table of content]]
+  - [[#source-code-block-tag-expansion][Source code block tag expansion]]
+  - [[#source-code-syntax-highlighting][Source code syntax highlighting]]
 - [[#startup-performance][STARTUP PERFORMANCE]]
   - [[#garbage-collection][Garbage collection]]
   - [[#native-compile][Native compile]]
+- [[#neotree][NEOTREE]]
 - [[#scrolling][SCROLLING]]
 
 * PACKAGE MANAGEMENT
@@ -145,6 +149,13 @@
                "d p" '(peep-dired :which-key "Peep-dired"))
 #+end_src
 
+** Neotree keybindings
+#+begin_src emacs-lisp
+(nvmap :prefix "SPC"
+       "t n"   '(neotree-toggle :which-key "Toggle neotree file viewer")
+       "d n"   '(neotree-dir :which-key "Open directory in neotree"))
+#+end_src
+
 ** Buffers and bookmarks
 #+begin_src emacs-lisp
 (nvmap :prefix "SPC"
@@ -156,7 +167,6 @@
        "b B"   '(ibuffer-list-buffers :which-key "Ibuffer list buffers")
        "b K"   '(kill-buffer :which-key "Kill buffer"))
 #+end_src
-
 
 ** Registers keybindings
 #+begin_src emacs-lisp
@@ -552,6 +562,20 @@
   :init (add-hook 'org-mode-hook 'toc-org-enable))
 #+end_src
 
+** Source code block tag expansion
+#+begin_src emacs-lisp
+(use-package org-tempo
+  :ensure nil) ;; tell use-package not to try to install org-tempo since it's already there.
+#+end_src
+
+** Source code syntax highlighting
+#+begin_src emacs-lisp
+(setq org-src-fontify-natively t
+    org-src-tab-acts-natively t
+    org-confirm-babel-evaluate nil
+    org-edit-src-content-indentation 0)
+#+end_src
+
 
 * STARTUP PERFORMANCE
 ** Garbage collection
@@ -589,6 +613,37 @@
 (setq load-prefer-newer noninteractive)
 #+end_src
 
+* NEOTREE
+#+begin_src emacs-lisp
+;; Function for setting a fixed width for neotree.
+;; Defaults to 25 but I make it a bit longer (35) in the 'use-package neotree'.
+(defcustom neo-window-width 25
+  "*Specifies the width of the NeoTree window."
+  :type 'integer
+  :group 'neotree)
+
+(use-package neotree
+  :ensure t
+  :config
+  (setq neo-smart-open t
+        neo-window-width 30
+        neo-theme (if (display-graphic-p) 'icons 'arrow)
+        ;;neo-window-fixed-size nil
+        inhibit-compacting-font-caches t
+        projectile-switch-project-action 'neotree-projectile-action) 
+        ;; truncate long file names in neotree
+        (add-hook 'neo-after-create-hook
+           #'(lambda (_)
+               (with-current-buffer (get-buffer neo-buffer-name)
+                 (setq truncate-lines t)
+                 (setq word-wrap nil)
+                 (make-local-variable 'auto-hscroll-mode)
+                 (setq auto-hscroll-mode nil)))))
+
+;; show hidden files
+(setq-default neo-show-hidden-files t)
+#+end_src
+       
 
 * SCROLLING
 #+begin_src emacs-lisp
