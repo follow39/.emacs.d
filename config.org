@@ -8,15 +8,17 @@
   - [[#installing-use-package][Installing use-package]]
   - [[#setup-packageel-to-work-with-melpa][Setup package.el to work with MELPA.]]
 - [[#general-keybindings][GENERAL KEYBINDINGS]]
-  - [[#basic-keybindings][Basic keybindings]]
-  - [[#org-mode-keybindings][Org mode keybindings]]
-  - [[#files-keybindings][Files keybindings]]
-  - [[#windows-keybindings][Windows keybindings]]
-  - [[#dired-keybindings][Dired keybindings]]
-  - [[#neotree-keybindings][Neotree keybindings]]
+  - [[#basic][Basic]]
+  - [[#org-mode][Org mode]]
+  - [[#files][Files]]
+  - [[#windows][Windows]]
+  - [[#dired][Dired]]
+  - [[#neotree][Neotree]]
   - [[#buffers-and-bookmarks][Buffers and bookmarks]]
-  - [[#registers-keybindings][Registers keybindings]]
-  - [[#ehell-bindings][Ehell bindings]]
+  - [[#registers][Registers]]
+  - [[#ehell][Ehell]]
+  - [[#ructic][Ructic]]
+  - [[#lsp][Lsp]]
 - [[#dashboard][DASHBOARD]]
 - [[#evil-mode][EVIL MODE]]
 - [[#fonts][FONTS]]
@@ -38,15 +40,15 @@
 - [[#vertico][VERTICO]]
 - [[#eshell][ESHELL]]
 - [[#vterm][VTERM]]
-- [[#org-mode][ORG MODE]]
-  - [[#basic][Basic]]
+- [[#org-mode-1][ORG MODE]]
+  - [[#basic-1][Basic]]
   - [[#table-of-content][Table of content]]
   - [[#source-code-block-tag-expansion][Source code block tag expansion]]
   - [[#source-code-syntax-highlighting][Source code syntax highlighting]]
 - [[#startup-performance][STARTUP PERFORMANCE]]
   - [[#garbage-collection][Garbage collection]]
   - [[#native-compile][Native compile]]
-- [[#neotree][NEOTREE]]
+- [[#neotree-1][NEOTREE]]
 - [[#scrolling][SCROLLING]]
 
 * PACKAGE MANAGEMENT
@@ -74,7 +76,7 @@
   (general-evil-setup t))
 #+end_src
 
-** Basic keybindings
+** Basic
 #+begin_src emacs-lisp
 (nvmap :keymaps 'override :prefix "SPC"
      "SPC"   '(counsel-M-x :which-key "M-x")
@@ -83,7 +85,7 @@
      )
 #+end_src
 
-** Org mode keybindings
+** Org mode
 #+begin_src emacs-lisp
 (nvmap :keymaps 'override :prefix "SPC"
      "m *"   '(org-ctrl-c-star :which-key "Org-ctrl-c-star")
@@ -104,7 +106,7 @@
      )
 #+end_src
 
-** Files keybindings
+** Files
 #+begin_src emacs-lisp
 (nvmap :states '(normal visual) :keymaps 'override :prefix "SPC"
      "."     '(find-file :which-key "Find file")
@@ -121,7 +123,7 @@
 )
 #+end_src
 
-** Windows keybindings
+** Windows
 #+begin_src emacs-lisp
 (winner-mode 1)
 (nvmap :prefix "SPC"
@@ -141,7 +143,7 @@
      "w <right>" '(winner-redo :which-key "Winner redo"))
 #+end_src
 
-** Dired keybindings
+** Dired
 #+begin_src emacs-lisp
 (nvmap :states '(normal visual) :keymaps 'override :prefix "SPC"
                "d d" '(dired :which-key "Open dired")
@@ -149,7 +151,7 @@
                "d p" '(peep-dired :which-key "Peep-dired"))
 #+end_src
 
-** Neotree keybindings
+** Neotree
 #+begin_src emacs-lisp
 (nvmap :prefix "SPC"
        "t n"   '(neotree-toggle :which-key "Toggle neotree file viewer")
@@ -168,7 +170,7 @@
        "b K"   '(kill-buffer :which-key "Kill buffer"))
 #+end_src
 
-** Registers keybindings
+** Registers
 #+begin_src emacs-lisp
 (nvmap :prefix "SPC"
        "r c"   '(copy-to-register :which-key "Copy to register")
@@ -184,12 +186,23 @@
        "r SPC" '(point-to-register :which-key "Point to register"))
 #+end_src
 
-** Ehell bindings
+** Ehell
 #+begin_src emacs-lisp
 (nvmap :prefix "SPC"
        "e h"   '(counsel-esh-history :which-key "Eshell history")
        "e e"   '(eshell :which-key "Eshell"))
 #+end_src
+
+** Ructic
+#+begin_src emacs-lisp
+
+#+end_src
+
+** Lsp
+#+begin_src emacs-lisp
+
+#+end_src
+
 
 * DASHBOARD
 #+begin_src emacs-lisp
@@ -327,7 +340,9 @@
   (lsp-rust-analyzer-cargo-watch-command "clippy")
   (lsp-eldoc-render-all t)
   (lsp-idle-delay 0.6)
-  ;; enable / disable the hints as you prefer:
+  ;; This controls the overlays that display type and other hints inline. Enable
+  ;; / disable as you prefer. Well require a `lsp-workspace-restart' to have an
+  ;; effect on open projects.
   (lsp-rust-analyzer-server-display-inlay-hints t)
   (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
   (lsp-rust-analyzer-display-chaining-hints t)
@@ -336,7 +351,8 @@
   (lsp-rust-analyzer-display-parameter-hints nil)
   (lsp-rust-analyzer-display-reborrow-hints nil)
   :config
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+)
 
 (use-package lsp-ui
   :ensure
@@ -344,7 +360,8 @@
   :custom
   (lsp-ui-peek-always-show t)
   (lsp-ui-sideline-show-hover t)
-  (lsp-ui-doc-enable nil))
+  (lsp-ui-doc-enable nil)
+)
 #+end_src
 
 
@@ -360,7 +377,8 @@
 	      ("C-c C-c r" . lsp-rename)
 	      ("C-c C-c q" . lsp-workspace-restart)
 	      ("C-c C-c Q" . lsp-workspace-shutdown)
-	      ("C-c C-c s" . lsp-rust-analyzer-status))
+	      ("C-c C-c s" . lsp-rust-analyzer-status)
+  )
   :config
   ;; uncomment for less flashiness
   ;; (setq lsp-eldoc-hook nil)
