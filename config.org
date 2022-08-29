@@ -62,9 +62,8 @@
 #+begin_src emacs-lisp
 (require 'package)
 (add-to-list 'package-archives
-             ;;'("tromey" . "http://tromey.com/elpa/")
              '("melpa" . "https://melpa.org/packages/"))
-(package-refresh-contents)
+;;(package-refresh-contents)
 (package-initialize)
 #+end_src
 
