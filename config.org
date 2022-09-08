@@ -5,8 +5,8 @@
 
 * TABLE OF CONTENTS :TOC:
 - [[#package-management][PACKAGE MANAGEMENT]]
-  - [[#installing-use-package][Installing use-package]]
   - [[#setup-packageel-to-work-with-melpa][Setup package.el to work with MELPA.]]
+  - [[#installing-use-package][Installing use-package]]
 - [[#general-keybindings][GENERAL KEYBINDINGS]]
   - [[#basic][Basic]]
   - [[#org-mode][Org mode]]
@@ -50,12 +50,6 @@
 - [[#scrolling][SCROLLING]]
 
 * PACKAGE MANAGEMENT
-** Installing use-package
-#+begin_src emacs-lisp
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-#+end_src
-
 ** Setup package.el to work with MELPA.
 #+begin_src emacs-lisp
 (require 'package)
@@ -63,6 +57,12 @@
              '("melpa" . "https://melpa.org/packages/"))
 ;;(package-refresh-contents)
 (package-initialize)
+#+end_src
+
+** Installing use-package
+#+begin_src emacs-lisp
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
 #+end_src
 
 * GENERAL KEYBINDINGS
