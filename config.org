@@ -4,9 +4,10 @@
 
 
 * TABLE OF CONTENTS :TOC:
+- [[#startup-performance][STARTUP PERFORMANCE]]
+  - [[#garbage-collection][Garbage collection]]
+  - [[#native-compile][Native compile]]
 - [[#package-management][PACKAGE MANAGEMENT]]
-  - [[#setup-packageel-to-work-with-melpa][Setup package.el to work with MELPA.]]
-  - [[#installing-use-package][Installing use-package]]
 - [[#general-keybindings][GENERAL KEYBINDINGS]]
   - [[#basic][Basic]]
   - [[#org-mode][Org mode]]
@@ -18,6 +19,7 @@
   - [[#shell][Shell]]
   - [[#ructic][Ructic]]
   - [[#lsp][Lsp]]
+  - [[#magit][Magit]]
 - [[#dashboard][DASHBOARD]]
 - [[#evil-mode][EVIL MODE]]
 - [[#fonts][FONTS]]
@@ -30,6 +32,7 @@
   - [[#theme][THEME]]
 - [[#which-key][WHICH KEY]]
 - [[#undo-tree][UNDO TREE]]
+- [[#magit-1][MAGIT]]
 - [[#lsp-mode][LSP MODE]]
 - [[#rust][RUST]]
 - [[#lldb][LLDB]]
@@ -44,26 +47,71 @@
   - [[#table-of-content][Table of content]]
   - [[#source-code-block-tag-expansion][Source code block tag expansion]]
   - [[#source-code-syntax-highlighting][Source code syntax highlighting]]
-- [[#startup-performance][STARTUP PERFORMANCE]]
-  - [[#garbage-collection][Garbage collection]]
-  - [[#native-compile][Native compile]]
 - [[#scrolling][SCROLLING]]
+- [[#runtime-performance][RUNTIME PERFORMANCE]]
+
+* STARTUP PERFORMANCE
+** Garbage collection
+#+begin_src emacs-lisp
+;; -*- lexical-binding: t; -*-
+
+;; The default is 800 kilobytes.  Measured in bytes.
+(setq gc-cons-threshold (* 50 1000 1000))
+
+;; Profile emacs startup
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "*** Emacs loaded in %s seconds with %d garbage collections."
+                     (emacs-init-time "%.2f")
+                     gcs-done)))
+#+end_src
+
+** Native compile
+#+begin_src emacs-lisp
+;; Silence compiler warnings as they can be pretty disruptive
+(setq native-comp-async-report-warnings-errors nil)
+
+;; Silence compiler warnings as they can be pretty disruptive
+(if (boundp 'comp-deferred-compilation)
+    (setq comp-deferred-compilation nil)
+    (setq native-comp-deferred-compilation nil))
+
+;; In noninteractive sessions, prioritize non-byte-compiled source files to
+;; prevent the use of stale byte-code. Otherwise, it saves us a little IO time
+;; to skip the mtime checks on every *.elc file.
+(setq load-prefer-newer noninteractive)
+#+end_src
+
 
 * PACKAGE MANAGEMENT
-** Setup package.el to work with MELPA.
 #+begin_src emacs-lisp
+;; Initialize package sources
 (require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
-;;(package-refresh-contents)
+
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("melpa-stable" . "https://stable.melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
+
+;; Fix an issue accessing the ELPA archive in Termux
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+
 (package-initialize)
+;; (unless package-archive-contents
+;;   (package-refresh-contents))
+
+;; Initialize use-package on non-Linux platforms
+(unless (package-installed-p 'use-package)
+   (package-install 'use-package))
+(require 'use-package)
+
+;; Uncomment this to get a reading on packages that get loaded at startup
+;;(setq use-package-verbose t)
+
+;; On non-Guix systems, "ensure" packages by default
+(setq use-package-always-ensure t) 
 #+end_src
 
-** Installing use-package
-#+begin_src emacs-lisp
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-#+end_src
 
 * GENERAL KEYBINDINGS
 #+begin_src emacs-lisp
@@ -199,6 +247,24 @@
 )
 #+end_src
 
+** Magit
+#+begin_src emacs-lisp
+(nvmap :prefix "SPC"
+  "g"   '(:ignore t :which-key "git")
+  "gs"  'magit-status
+  "gd"  'magit-diff-unstaged
+  "gc"  'magit-branch-or-checkout
+  "gl"   '(:ignore t :which-key "log")
+  "glc" 'magit-log-current
+  "glf" 'magit-log-buffer-file
+  "gb"  'magit-branch
+  "gP"  'magit-push-current
+  "gp"  'magit-pull-branch
+  "gf"  'magit-fetch
+  "gF"  'magit-fetch-all
+  "gr"  'magit-rebase)
+#+end_src
+
 
 * DASHBOARD
 #+begin_src emacs-lisp
@@ -323,6 +389,16 @@
   :config
   (evil-set-undo-system 'undo-tree)
   (global-undo-tree-mode 1))
+#+end_src
+
+
+* MAGIT
+#+begin_src emacs-lisp
+(use-package magit
+  :bind ("C-M-;" . magit-status)
+  :commands (magit-status magit-get-current-branch)
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 #+end_src
 
 
@@ -602,45 +678,15 @@
 #+end_src
 
 
-* STARTUP PERFORMANCE
-** Garbage collection
-#+begin_src emacs-lisp
-;; Using garbage magic hack.
- (use-package gcmh
-   :ensure t
-   :config
-   (gcmh-mode 1))
-;; Setting garbage collection threshold
-(setq gc-cons-threshold 402653184
-      gc-cons-percentage 0.6)
-
-;; Profile emacs startup
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "*** Emacs loaded in %s with %d garbage collections."
-                     (format "%.2f seconds"
-                             (float-time
-                              (time-subtract after-init-time before-init-time)))
-                     gcs-done)))
-
-;; Silence compiler warnings as they can be pretty disruptive (setq comp-async-report-warnings-errors nil)
-#+end_src
-
-** Native compile
-#+begin_src emacs-lisp
-;; Silence compiler warnings as they can be pretty disruptive
-(if (boundp 'comp-deferred-compilation)
-    (setq comp-deferred-compilation nil)
-    (setq native-comp-deferred-compilation nil))
-;; In noninteractive sessions, prioritize non-byte-compiled source files to
-;; prevent the use of stale byte-code. Otherwise, it saves us a little IO time
-;; to skip the mtime checks on every *.elc file.
-(setq load-prefer-newer noninteractive)
-#+end_src
-
-
 * SCROLLING
 #+begin_src emacs-lisp
 (setq scroll-conservatively 101) ;; value greater than 100 gets rid of half page jumping
 (setq scroll-margin 13) ;; set scroll margin value
+#+end_src
+
+
+* RUNTIME PERFORMANCE
+#+begin_src emacs-lisp
+;; Make gc pauses faster by decreasing the threshold.
+(setq gc-cons-threshold (* 2 1000 1000))
 #+end_src
