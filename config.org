@@ -641,4 +641,5 @@
 * SCROLLING
 #+begin_src emacs-lisp
 (setq scroll-conservatively 101) ;; value greater than 100 gets rid of half page jumping
+(setq scroll-margin 13) ;; set scroll margin value
 #+end_src
