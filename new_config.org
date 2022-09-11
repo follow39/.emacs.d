@@ -850,336 +850,336 @@ Emacs’ default buffer placement algorithm is pretty disruptive if you like set
 #+end_src
 
 * Org mode
-# ** Org configuration
-# #+begin_src emacs-lisp
-# ;; TODO: Mode this to another section
-# (setq-default fill-column 80)
+** Org configuration
+#+begin_src emacs-lisp
+  ;; TODO: Mode this to another section
+  (setq-default fill-column 80)
 
-# ;; Turn on indentation and auto-fill mode for Org files
-# (defun dw/org-mode-setup ()
-#   (org-indent-mode)
-#   (variable-pitch-mode 1)
-#   (auto-fill-mode 0)
-#   (visual-line-mode 1)
-#   (setq evil-auto-indent nil)
-#   (diminish org-indent-mode))
+  ;; Turn on indentation and auto-fill mode for Org files
+  (defun dw/org-mode-setup ()
+    (org-indent-mode)
+    (variable-pitch-mode 1)
+    (auto-fill-mode 0)
+    (visual-line-mode 1)
+    (setq evil-auto-indent nil)
+    (diminish org-indent-mode))
 
-# (setup (:pkg org)
-#   (:also-load org-tempo dw-org dw-workflow)
-#   (:hook dw/org-mode-setup)
-#   (setq org-ellipsis " ▾"
-#         org-hide-emphasis-markers t
-#         org-src-fontify-natively t
-#         org-fontify-quote-and-verse-blocks t
-#         org-src-tab-acts-natively t
-#         org-edit-src-content-indentation 2
-#         org-hide-block-startup nil
-#         org-src-preserve-indentation nil
-#         org-startup-folded 'content
-#         org-cycle-separator-lines 2
-#         org-capture-bookmark nil)
+  (setup (:pkg org)
+    (:also-load org-tempo dw-org dw-workflow)
+    (:hook dw/org-mode-setup)
+    (setq org-ellipsis " ▾"
+          org-hide-emphasis-markers t
+          org-src-fontify-natively t
+          org-fontify-quote-and-verse-blocks t
+          org-src-tab-acts-natively t
+          org-edit-src-content-indentation 2
+          org-hide-block-startup nil
+          org-src-preserve-indentation nil
+          org-startup-folded 'content
+          org-cycle-separator-lines 2
+          org-capture-bookmark nil)
 
-#   (setq org-modules
-#     '(org-crypt
-#         org-habit
-#         org-bookmark
-#         org-eshell
-#         org-irc))
+    (setq org-modules
+      '(org-crypt
+          org-habit
+          org-bookmark
+          org-eshell
+          org-irc))
 
-#   (setq org-refile-targets '((nil :maxlevel . 1)
-#                              (org-agenda-files :maxlevel . 1)))
+    (setq org-refile-targets '((nil :maxlevel . 1)
+                               (org-agenda-files :maxlevel . 1)))
 
-#   (setq org-outline-path-complete-in-steps nil)
-#   (setq org-refile-use-outline-path t)
+    (setq org-outline-path-complete-in-steps nil)
+    (setq org-refile-use-outline-path t)
 
-#   (evil-define-key '(normal insert visual) org-mode-map (kbd "C-j") 'org-next-visible-heading)
-#   (evil-define-key '(normal insert visual) org-mode-map (kbd "C-k") 'org-previous-visible-heading)
+    (evil-define-key '(normal insert visual) org-mode-map (kbd "C-j") 'org-next-visible-heading)
+    (evil-define-key '(normal insert visual) org-mode-map (kbd "C-k") 'org-previous-visible-heading)
 
-#   (evil-define-key '(normal insert visual) org-mode-map (kbd "M-j") 'org-metadown)
-#   (evil-define-key '(normal insert visual) org-mode-map (kbd "M-k") 'org-metaup)
+    (evil-define-key '(normal insert visual) org-mode-map (kbd "M-j") 'org-metadown)
+    (evil-define-key '(normal insert visual) org-mode-map (kbd "M-k") 'org-metaup)
 
-#   (org-babel-do-load-languages
-#     'org-babel-load-languages
-#     '((emacs-lisp . t)
-#       (ledger . t)))
+    (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((emacs-lisp . t)
+        (ledger . t)))
 
-#   (push '("conf-unix" . conf-unix) org-src-lang-modes))
-# #+end_src
+    (push '("conf-unix" . conf-unix) org-src-lang-modes))
+#+end_src
 
-# ** Fonts and Bullets
-# #+begin_src emacs-lisp
-# (setup (:pkg org-superstar)
-#   (:load-after org)
-#   (:hook-into org-mode)
-#   (:option org-superstar-remove-leading-stars t
-#            org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
+** Fonts and Bullets
+#+begin_src emacs-lisp
+(setup (:pkg org-superstar)
+  (:load-after org)
+  (:hook-into org-mode)
+  (:option org-superstar-remove-leading-stars t
+           org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-# ;; Replace list hyphen with dot
-# ;; (font-lock-add-keywords 'org-mode
-# ;;                         '(("^ *\\([-]\\) "
-# ;;                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+;; Replace list hyphen with dot
+;; (font-lock-add-keywords 'org-mode
+;;                         '(("^ *\\([-]\\) "
+;;                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-# (setup org-faces
-#   ;; Make sure org-indent face is available
-#   (:also-load org-indent)
-#   (:when-loaded
-#     ;; Increase the size of various headings
-#     (set-face-attribute 'org-document-title nil :font "Iosevka Aile" :weight 'bold :height 1.3)
+(setup org-faces
+  ;; Make sure org-indent face is available
+  (:also-load org-indent)
+  (:when-loaded
+    ;; Increase the size of various headings
+    (set-face-attribute 'org-document-title nil :font "Iosevka Aile" :weight 'bold :height 1.3)
   
-#     (dolist (face '((org-level-1 . 1.2)
-#                     (org-level-2 . 1.1)
-#                     (org-level-3 . 1.05)
-#                     (org-level-4 . 1.0)
-#                     (org-level-5 . 1.1)
-#                     (org-level-6 . 1.1)
-#                     (org-level-7 . 1.1)
-#                     (org-level-8 . 1.1)))
-#       (set-face-attribute (car face) nil :font "Iosevka Aile" :weight 'medium :height (cdr face)))
+    (dolist (face '((org-level-1 . 1.2)
+                    (org-level-2 . 1.1)
+                    (org-level-3 . 1.05)
+                    (org-level-4 . 1.0)
+                    (org-level-5 . 1.1)
+                    (org-level-6 . 1.1)
+                    (org-level-7 . 1.1)
+                    (org-level-8 . 1.1)))
+      (set-face-attribute (car face) nil :font "Iosevka Aile" :weight 'medium :height (cdr face)))
 
-#     ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-#     (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-#     (set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
-#     (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-#     (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-#     (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-#     (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-#     (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-#     (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-#     (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+    (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
-#     ;; Get rid of the background on column views
-#     (set-face-attribute 'org-column nil :background nil)
-#     (set-face-attribute 'org-column-title nil :background nil)))
-# #+end_src
+    ;; Get rid of the background on column views
+    (set-face-attribute 'org-column nil :background nil)
+    (set-face-attribute 'org-column-title nil :background nil)))
+#+end_src
 
-# ** Block templates
-# #+begin_src emacs-lisp
-# ;; This is needed as of Org 9.2
-# (setup org-tempo
-#   (:when-loaded
-#     (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
-#     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-#     (add-to-list 'org-structure-template-alist '("li" . "src lisp"))
-#     (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
-#     (add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
-#     (add-to-list 'org-structure-template-alist '("py" . "src python"))
-#     (add-to-list 'org-structure-template-alist '("go" . "src go"))
-#     (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
-#     (add-to-list 'org-structure-template-alist '("json" . "src json"))))
-# #+end_src
+** Block templates
+#+begin_src emacs-lisp
+;; This is needed as of Org 9.2
+(setup org-tempo
+  (:when-loaded
+    (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+    (add-to-list 'org-structure-template-alist '("li" . "src lisp"))
+    (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+    (add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
+    (add-to-list 'org-structure-template-alist '("py" . "src python"))
+    (add-to-list 'org-structure-template-alist '("go" . "src go"))
+    (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
+    (add-to-list 'org-structure-template-alist '("json" . "src json"))))
+#+end_src
 
-# ** Bindings
-# #+begin_src emacs-lisp
-# (setup (:pkg evil-org)
-#   (:hook-into org-mode org-agenda-mode)
-#   (require 'evil-org)
-#   (require 'evil-org-agenda)
-#   (evil-org-set-key-theme '(navigation todo insert textobjects additional))
-#   (evil-org-agenda-set-keys))
+** Bindings
+#+begin_src emacs-lisp
+(setup (:pkg evil-org)
+  (:hook-into org-mode org-agenda-mode)
+  (require 'evil-org)
+  (require 'evil-org-agenda)
+  (evil-org-set-key-theme '(navigation todo insert textobjects additional))
+  (evil-org-agenda-set-keys))
 
-# (dw/leader-key-def
-#   "o"   '(:ignore t :which-key "org mode")
+(dw/leader-key-def
+  "o"   '(:ignore t :which-key "org mode")
 
-#   "oi"  '(:ignore t :which-key "insert")
-#   "oil" '(org-insert-link :which-key "insert link")
+  "oi"  '(:ignore t :which-key "insert")
+  "oil" '(org-insert-link :which-key "insert link")
 
-#   "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
+  "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
 
-#   "os"  '(dw/counsel-rg-org-files :which-key "search notes")
+  "os"  '(dw/counsel-rg-org-files :which-key "search notes")
 
-#   "oa"  '(org-agenda :which-key "status")
-#   "ot"  '(org-todo-list :which-key "todos")
-#   "oc"  '(org-capture t :which-key "capture")
-#   "ox"  '(org-export-dispatch t :which-key "export"))
-# #+end_src
+  "oa"  '(org-agenda :which-key "status")
+  "ot"  '(org-todo-list :which-key "todos")
+  "oc"  '(org-capture t :which-key "capture")
+  "ox"  '(org-export-dispatch t :which-key "export"))
+#+end_src
 
-# ** Update table of content on save
-# #+begin_src emacs-lisp
-# (setup (:pkg org-make-toc)
-#   (:hook-into org-mode))
-# #+end_src
+** Update table of content on save
+#+begin_src emacs-lisp
+(setup (:pkg org-make-toc)
+  (:hook-into org-mode))
+#+end_src
 
-# ** Presentations
-# #+begin_src emacs-lisp
-# (defun dw/org-present-prepare-slide ()
-#   (org-overview)
-#   (org-show-entry)
-#   (org-show-children))
+** Presentations
+#+begin_src emacs-lisp
+(defun dw/org-present-prepare-slide ()
+  (org-overview)
+  (org-show-entry)
+  (org-show-children))
 
-# (defun dw/org-present-hook ()
-#   (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
-#                                      (header-line (:height 4.5) variable-pitch)
-#                                      (org-document-title (:height 1.75) org-document-title)
-#                                      (org-code (:height 1.55) org-code)
-#                                      (org-verbatim (:height 1.55) org-verbatim)
-#                                      (org-block (:height 1.25) org-block)
-#                                      (org-block-begin-line (:height 0.7) org-block)))
-#   (setq header-line-format " ")
-#   (org-appear-mode -1)
-#   (org-display-inline-images)
-#   (dw/org-present-prepare-slide)
-#   (dw/kill-panel))
+(defun dw/org-present-hook ()
+  (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
+                                     (header-line (:height 4.5) variable-pitch)
+                                     (org-document-title (:height 1.75) org-document-title)
+                                     (org-code (:height 1.55) org-code)
+                                     (org-verbatim (:height 1.55) org-verbatim)
+                                     (org-block (:height 1.25) org-block)
+                                     (org-block-begin-line (:height 0.7) org-block)))
+  (setq header-line-format " ")
+  (org-appear-mode -1)
+  (org-display-inline-images)
+  (dw/org-present-prepare-slide)
+  (dw/kill-panel))
 
-# (defun dw/org-present-quit-hook ()
-#   (setq-local face-remapping-alist '((default variable-pitch default)))
-#   (setq header-line-format nil)
-#   (org-present-small)
-#   (org-remove-inline-images)
-#   (org-appear-mode 1)
-#   (dw/start-panel))
+(defun dw/org-present-quit-hook ()
+  (setq-local face-remapping-alist '((default variable-pitch default)))
+  (setq header-line-format nil)
+  (org-present-small)
+  (org-remove-inline-images)
+  (org-appear-mode 1)
+  (dw/start-panel))
 
-# (defun dw/org-present-prev ()
-#   (interactive)
-#   (org-present-prev)
-#   (dw/org-present-prepare-slide))
+(defun dw/org-present-prev ()
+  (interactive)
+  (org-present-prev)
+  (dw/org-present-prepare-slide))
 
-# (defun dw/org-present-next ()
-#   (interactive)
-#   (org-present-next)
-#   (dw/org-present-prepare-slide)
-#   (when (fboundp 'live-crafter-add-timestamp)
-#     (live-crafter-add-timestamp (substring-no-properties (org-get-heading t t t t)))))
+(defun dw/org-present-next ()
+  (interactive)
+  (org-present-next)
+  (dw/org-present-prepare-slide)
+  (when (fboundp 'live-crafter-add-timestamp)
+    (live-crafter-add-timestamp (substring-no-properties (org-get-heading t t t t)))))
 
-# (setup (:pkg org-present)
-#   (:with-map org-present-mode-keymap
-#     (:bind "C-c C-j" dw/org-present-next
-#            "C-c C-k" dw/org-present-prev))
-#   (:hook dw/org-present-hook)
-#   (:with-hook org-present-mode-quit-hook
-#     (:hook dw/org-present-quit-hook)))
-# #+end_src
+(setup (:pkg org-present)
+  (:with-map org-present-mode-keymap
+    (:bind "C-c C-j" dw/org-present-next
+           "C-c C-k" dw/org-present-prev))
+  (:hook dw/org-present-hook)
+  (:with-hook org-present-mode-quit-hook
+    (:hook dw/org-present-quit-hook)))
+#+end_src
 
-# ** Org roam
-# #+begin_src emacs-lisp
-# (defvar dw/org-roam-project-template
-#   '("p" "project" plain "** TODO %?"
-#     :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
-#                            "#+title: ${title}\n#+category: ${title}\n#+filetags: Project\n"
-#                            ("Tasks"))))
+** Org roam
+#+begin_src emacs-lisp
+(defvar dw/org-roam-project-template
+  '("p" "project" plain "** TODO %?"
+    :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
+                           "#+title: ${title}\n#+category: ${title}\n#+filetags: Project\n"
+                           ("Tasks"))))
 
-# (defun my/org-roam-filter-by-tag (tag-name)
-#   (lambda (node)
-#     (member tag-name (org-roam-node-tags node))))
+(defun my/org-roam-filter-by-tag (tag-name)
+  (lambda (node)
+    (member tag-name (org-roam-node-tags node))))
 
-# (defun my/org-roam-list-notes-by-tag (tag-name)
-#   (mapcar #'org-roam-node-file
-#           (seq-filter
-#            (my/org-roam-filter-by-tag tag-name)
-#            (org-roam-node-list))))
+(defun my/org-roam-list-notes-by-tag (tag-name)
+  (mapcar #'org-roam-node-file
+          (seq-filter
+           (my/org-roam-filter-by-tag tag-name)
+           (org-roam-node-list))))
 
-# (defun org-roam-node-insert-immediate (arg &rest args)
-#   (interactive "P")
-#   (let ((args (push arg args))
-#         (org-roam-capture-templates (list (append (car org-roam-capture-templates)
-#                                                   '(:immediate-finish t)))))
-#     (apply #'org-roam-node-insert args)))
+(defun org-roam-node-insert-immediate (arg &rest args)
+  (interactive "P")
+  (let ((args (push arg args))
+        (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+                                                  '(:immediate-finish t)))))
+    (apply #'org-roam-node-insert args)))
 
-# (defun dw/org-roam-goto-month ()
-#   (interactive)
-#   (org-roam-capture- :goto (when (org-roam-node-from-title-or-alias (format-time-string "%Y-%B")) '(4))
-#                      :node (org-roam-node-create)
-#                      :templates '(("m" "month" plain "\n* Goals\n\n%?* Summary\n\n"
-#                                    :if-new (file+head "%<%Y-%B>.org"
-#                                                       "#+title: %<%Y-%B>\n#+filetags: Project\n")
-#                                    :unnarrowed t))))
+(defun dw/org-roam-goto-month ()
+  (interactive)
+  (org-roam-capture- :goto (when (org-roam-node-from-title-or-alias (format-time-string "%Y-%B")) '(4))
+                     :node (org-roam-node-create)
+                     :templates '(("m" "month" plain "\n* Goals\n\n%?* Summary\n\n"
+                                   :if-new (file+head "%<%Y-%B>.org"
+                                                      "#+title: %<%Y-%B>\n#+filetags: Project\n")
+                                   :unnarrowed t))))
 
-# (defun dw/org-roam-goto-year ()
-#   (interactive)
-#   (org-roam-capture- :goto (when (org-roam-node-from-title-or-alias (format-time-string "%Y")) '(4))
-#                      :node (org-roam-node-create)
-#                      :templates '(("y" "year" plain "\n* Goals\n\n%?* Summary\n\n"
-#                                    :if-new (file+head "%<%Y>.org"
-#                                                       "#+title: %<%Y>\n#+filetags: Project\n")
-#                                    :unnarrowed t))))
+(defun dw/org-roam-goto-year ()
+  (interactive)
+  (org-roam-capture- :goto (when (org-roam-node-from-title-or-alias (format-time-string "%Y")) '(4))
+                     :node (org-roam-node-create)
+                     :templates '(("y" "year" plain "\n* Goals\n\n%?* Summary\n\n"
+                                   :if-new (file+head "%<%Y>.org"
+                                                      "#+title: %<%Y>\n#+filetags: Project\n")
+                                   :unnarrowed t))))
 
-# (defun dw/org-roam-capture-task ()
-#   (interactive)
-#   ;; Add the project file to the agenda after capture is finished
-#   (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+(defun dw/org-roam-capture-task ()
+  (interactive)
+  ;; Add the project file to the agenda after capture is finished
+  (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
 
-#   ;; Capture the new task, creating the project file if necessary
-#   (org-roam-capture- :node (org-roam-node-read
-#                             nil
-#                             (my/org-roam-filter-by-tag "Project"))
-#                      :templates (list dw/org-roam-project-template)))
+  ;; Capture the new task, creating the project file if necessary
+  (org-roam-capture- :node (org-roam-node-read
+                            nil
+                            (my/org-roam-filter-by-tag "Project"))
+                     :templates (list dw/org-roam-project-template)))
 
-# (defun my/org-roam-refresh-agenda-list ()
-#   (interactive)
-#   (setq org-agenda-files (my/org-roam-list-notes-by-tag "Project")))
+(defun my/org-roam-refresh-agenda-list ()
+  (interactive)
+  (setq org-agenda-files (my/org-roam-list-notes-by-tag "Project")))
 
-# (defhydra dw/org-roam-jump-menu (:hint nil)
-#   "
-# ^Dailies^        ^Capture^       ^Jump^
-# ^^^^^^^^-------------------------------------------------
-# _t_: today       _T_: today       _m_: current month
-# _r_: tomorrow    _R_: tomorrow    _e_: current year
-# _y_: yesterday   _Y_: yesterday   ^ ^
-# _d_: date        ^ ^              ^ ^
-# "
-#   ("t" org-roam-dailies-goto-today)
-#   ("r" org-roam-dailies-goto-tomorrow)
-#   ("y" org-roam-dailies-goto-yesterday)
-#   ("d" org-roam-dailies-goto-date)
-#   ("T" org-roam-dailies-capture-today)
-#   ("R" org-roam-dailies-capture-tomorrow)
-#   ("Y" org-roam-dailies-capture-yesterday)
-#   ("m" dw/org-roam-goto-month)
-#   ("e" dw/org-roam-goto-year)
-#   ("c" nil "cancel"))
+(defhydra dw/org-roam-jump-menu (:hint nil)
+  "
+^Dailies^        ^Capture^       ^Jump^
+^^^^^^^^-------------------------------------------------
+_t_: today       _T_: today       _m_: current month
+_r_: tomorrow    _R_: tomorrow    _e_: current year
+_y_: yesterday   _Y_: yesterday   ^ ^
+_d_: date        ^ ^              ^ ^
+"
+  ("t" org-roam-dailies-goto-today)
+  ("r" org-roam-dailies-goto-tomorrow)
+  ("y" org-roam-dailies-goto-yesterday)
+  ("d" org-roam-dailies-goto-date)
+  ("T" org-roam-dailies-capture-today)
+  ("R" org-roam-dailies-capture-tomorrow)
+  ("Y" org-roam-dailies-capture-yesterday)
+  ("m" dw/org-roam-goto-month)
+  ("e" dw/org-roam-goto-year)
+  ("c" nil "cancel"))
 
-# (setup (:pkg org-roam :straight t)
-#   (setq org-roam-v2-ack t)
-#   (setq dw/daily-note-filename "%<%Y-%m-%d>.org"
-#         dw/daily-note-header "#+title: %<%Y-%m-%d %a>\n\n[[roam:%<%Y-%B>]]\n\n")
+(setup (:pkg org-roam :straight t)
+  (setq org-roam-v2-ack t)
+  (setq dw/daily-note-filename "%<%Y-%m-%d>.org"
+        dw/daily-note-header "#+title: %<%Y-%m-%d %a>\n\n[[roam:%<%Y-%B>]]\n\n")
 
-#   (:when-loaded
-#     (org-roam-db-autosync-mode)
-#     (my/org-roam-refresh-agenda-list))
+  (:when-loaded
+    (org-roam-db-autosync-mode)
+    (my/org-roam-refresh-agenda-list))
 
-#   (:option
-#    org-roam-directory "~/Notes/Roam/"
-#    org-roam-dailies-directory "Journal/"
-#    org-roam-completion-everywhere t
-#    org-roam-capture-templates
-#    '(("d" "default" plain "%?"
-#       :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-#                          "#+title: ${title}\n")
-#       :unnarrowed t))
-#    org-roam-dailies-capture-templates
-#    `(("d" "default" entry
-#       "* %?"
-#       :if-new (file+head ,dw/daily-note-filename
-#                          ,dw/daily-note-header))
-#      ("t" "task" entry
-#       "* TODO %?\n  %U\n  %a\n  %i"
-#       :if-new (file+head+olp ,dw/daily-note-filename
-#                              ,dw/daily-note-header
-#                              ("Tasks"))
-#       :empty-lines 1)
-#      ("l" "log entry" entry
-#       "* %<%I:%M %p> - %?"
-#       :if-new (file+head+olp ,dw/daily-note-filename
-#                              ,dw/daily-note-header
-#                              ("Log")))
-#      ("j" "journal" entry
-#       "* %<%I:%M %p> - Journal  :journal:\n\n%?\n\n"
-#       :if-new (file+head+olp ,dw/daily-note-filename
-#                              ,dw/daily-note-header
-#                              ("Log")))
-#      ("m" "meeting" entry
-#       "* %<%I:%M %p> - %^{Meeting Title}  :meetings:\n\n%?\n\n"
-#       :if-new (file+head+olp ,dw/daily-note-filename
-#                              ,dw/daily-note-header
-#                              ("Log")))))
-#   (:global "C-c n l" org-roam-buffer-toggle
-#            "C-c n f" org-roam-node-find
-#            "C-c n d" dw/org-roam-jump-menu/body
-#            "C-c n c" org-roam-dailies-capture-today
-#            "C-c n t" dw/org-roam-capture-task
-#            "C-c n g" org-roam-graph)
-#   (:bind "C-c n i" org-roam-node-insert
-#          "C-c n I" org-roam-insert-immediate))
-# #+end_src
+  (:option
+   org-roam-directory "~/Notes/Roam/"
+   org-roam-dailies-directory "Journal/"
+   org-roam-completion-everywhere t
+   org-roam-capture-templates
+   '(("d" "default" plain "%?"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n")
+      :unnarrowed t))
+   org-roam-dailies-capture-templates
+   `(("d" "default" entry
+      "* %?"
+      :if-new (file+head ,dw/daily-note-filename
+                         ,dw/daily-note-header))
+     ("t" "task" entry
+      "* TODO %?\n  %U\n  %a\n  %i"
+      :if-new (file+head+olp ,dw/daily-note-filename
+                             ,dw/daily-note-header
+                             ("Tasks"))
+      :empty-lines 1)
+     ("l" "log entry" entry
+      "* %<%I:%M %p> - %?"
+      :if-new (file+head+olp ,dw/daily-note-filename
+                             ,dw/daily-note-header
+                             ("Log")))
+     ("j" "journal" entry
+      "* %<%I:%M %p> - Journal  :journal:\n\n%?\n\n"
+      :if-new (file+head+olp ,dw/daily-note-filename
+                             ,dw/daily-note-header
+                             ("Log")))
+     ("m" "meeting" entry
+      "* %<%I:%M %p> - %^{Meeting Title}  :meetings:\n\n%?\n\n"
+      :if-new (file+head+olp ,dw/daily-note-filename
+                             ,dw/daily-note-header
+                             ("Log")))))
+  (:global "C-c n l" org-roam-buffer-toggle
+           "C-c n f" org-roam-node-find
+           "C-c n d" dw/org-roam-jump-menu/body
+           "C-c n c" org-roam-dailies-capture-today
+           "C-c n t" dw/org-roam-capture-task
+           "C-c n g" org-roam-graph)
+  (:bind "C-c n i" org-roam-node-insert
+         "C-c n I" org-roam-insert-immediate))
+#+end_src
 
 ** Auto-show markup symbols
 #+begin_src emacs-lisp
