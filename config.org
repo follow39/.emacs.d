@@ -39,6 +39,7 @@
   - [[#c][C++]]
   - [[#rust][RUST]]
   - [[#lldb][LLDB]]
+  - [[#yaml][Yaml]]
 - [[#company][COMPANY]]
 - [[#flycheck][FLYCHECK]]
 - [[#projectile][PROJECTILE]]
@@ -530,6 +531,13 @@
 	   ;; uncomment if lldb-mi is not in PATH
 	   ;; :lldbmipath "/usr/local/bin/lldb-mi"
 	   ))))
+#+end_src
+
+** Yaml
+#+begin_src emacs-lisp
+(use-package yaml-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 #+end_src
 	 
 
