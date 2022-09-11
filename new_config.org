@@ -126,19 +126,19 @@ My emacs configuration based on https://github.com/daviwil/dotfiles/blob/master/
 * Keep .emacs.d clean
 #+begin_src emacs-lisp
 ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
-(setq user-emacs-directory (expand-file-name "~/.cache/emacs/")
-      url-history-file (expand-file-name "url/history" user-emacs-directory))
+;;(setq user-emacs-directory (expand-file-name "~/.cache/emacs/")
+;;      url-history-file (expand-file-name "url/history" user-emacs-directory))
 
 ;; Use no-littering to automatically set common paths to the new user-emacs-directory
-(setup (:pkg no-littering)
-  (require 'no-littering))
+;;(setup (:pkg no-littering)
+;;  (require 'no-littering))
 
 ;; Keep customization settings in a temporary file (thanks Ambrevar!)
-(setq custom-file
-      (if (boundp 'server-socket-dir)
-          (expand-file-name "custom.el" server-socket-dir)
-        (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
-(load custom-file t)
+;;(setq custom-file
+;;      (if (boundp 'server-socket-dir)
+;;          (expand-file-name "custom.el" server-socket-dir)
+;;        (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
+;;(load custom-file t)
 #+end_src
 
 * Update load path
@@ -294,7 +294,7 @@ Set frame transparency and maximaze window by default
 Enable line numbers and customize their format
 #+begin_src emacs-lisp
 (column-number-mode)
-;;(toggle-truncate-lines 1)
+(toggle-truncate-lines 1)
 
 ;; Enable line numbers for some modes
 (dolist (mode '(text-mode-hook
@@ -392,7 +392,7 @@ Different platforms need different default font sizes, and Fira Mono is currentl
 #+end_src
 
 ** Notification
-alert is a library for showing notifications from other packages in a variety of ways
+ulert is a library for showing notifications from other packages in a variety of ways
 #+begin_src emacs-lisp
   (setup (:pkg alert)
     (:option alert-default-style 'notifications))
@@ -438,7 +438,7 @@ alert is a library for showing notifications from other packages in a variety of
   '(("Etc/UTC" "UTC")
     ("Europe/Belgrade" "Belgrade")
     ("Europe/Munich" "Munich")
-    ("Europe/Moscow" "Moscow")
+    ("Europe/Moscow" "Moscow"))
 (setq display-time-world-time-format "%a, %d %b %I:%M %p %Z")
 #+end_src
 
@@ -760,40 +760,30 @@ folder, otherwise delete a word"
 ** Controll buffer placement
 Emacs’ default buffer placement algorithm is pretty disruptive if you like setting up window layouts a certain way in your workflow. The display-buffer-alist variable controls this behavior and you can customize it to prevent Emacs from popping up new windows when you run commands.
 #+begin_src emacs-lisp
-;; (setq display-buffer-base-action
-;;       '(display-buffer-reuse-mode-window
-;;         display-buffer-reuse-window
-;;         display-buffer-same-window))
+  ;; (setq display-buffer-base-action
+  ;;       '(display-buffer-reuse-mode-window
+  ;;         display-buffer-reuse-window
+  ;;         display-buffer-same-window))
 
-;; If a popup does happen, don't resize windows to be equal-sized
-(setq even-window-sizes nil)
+  ;; If a popup does happen, don't resize windows to be equal-sized
+  (setq even-window-sizes nil)
 #+end_src
 
 ** Taming popups with popper.el
 #+begin_src emacs-lisp
-(setup (:pkg popper
-             :host github
-             :repo "karthink/popper"
-             :build (:not autoloads))
-  (:global "C-M-'" popper-toggle-latest
-           "M-'" popper-cycle
-           "C-M-\"" popper-toggle-type)
-  (:option popper-window-height 12
-           ;; (popper-window-height
-           ;; (lambda (window)
-           ;;   (let ((buffer-mode (with-current-buffer (window-buffer window)
-           ;;                        major-mode)))
-           ;;     (message "BUFFER MODE: %s" buffer-mode)
-           ;;     (pcase buffer-mode
-           ;;       ('exwm-mode 40)
-           ;;       ('helpful-mode 20)
-           ;;       ('eshell-mode (progn (message "eshell!") 10))
-           ;;       (_ 15)))))
-           popper-reference-buffers '("^\\*eshell\\*"
-                                      "^vterm"
-                                      help-mode
-                                      helpful-mode
-                                      compilation-mode))
+  (setup (:pkg popper
+	       :host github
+	       :repo "karthink/popper"
+	       :build (:not autoloads))
+      (:global "C-M-;" popper-toggle-latest
+	   "M-;" popper-cycle
+	   "C-M-:" popper-toggle-type)
+      (:option popper-window-height 12
+	   popper-reference-buffers '("^\\*eshell\\*"
+				      "^vterm"
+				      help-mode
+				      helpful-mode
+				      compilation-mode))
   (require 'popper) ;; Needed because I disabled autoloads
   (popper-mode 1))
 #+end_src
@@ -858,21 +848,6 @@ Emacs’ default buffer placement algorithm is pretty disruptive if you like set
    (dired-rainbow-define partition "#e3342f" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
    (dired-rainbow-define vc "#0074d9" ("git" "gitignore" "gitattributes" "gitmodules"))
    (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")))
-
-;; (defun dw/dired-link (path)
-;;   (lexical-let ((target path))
-;;     (lambda () (interactive) (message "Path: %s" target) (dired target))))
-
-;; (dw/leader-key-def
-;;   "d"   '(:ignore t :which-key "dired")
-;;   "dd"  '(dired :which-key "Here")
-;;   "dh"  `(,(dw/dired-link "~") :which-key "Home")
-;;   "dn"  `(,(dw/dired-link "~/Notes") :which-key "Notes")
-;;   "do"  `(,(dw/dired-link "~/Downloads") :which-key "Downloads")
-;;   "dp"  `(,(dw/dired-link "~/Pictures") :which-key "Pictures")
-;;   "dv"  `(,(dw/dired-link "~/Videos") :which-key "Videos")
-;;   "d."  `(,(dw/dired-link "~/.dotfiles") :which-key "dotfiles")
-;;   "de"  `(,(dw/dired-link "~/.emacs.d") :which-key ".emacs.d"))
 #+end_src
 
 * Org mode
@@ -976,15 +951,6 @@ Emacs’ default buffer placement algorithm is pretty disruptive if you like set
     ;; Get rid of the background on column views
     (set-face-attribute 'org-column nil :background nil)
     (set-face-attribute 'org-column-title nil :background nil)))
-
-;; TODO: Others to consider
-;; '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-;; '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-;; '(org-property-value ((t (:inherit fixed-pitch))) t)
-;; '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-;; '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
-;; '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
-;; '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
 #+end_src
 
 ** Block templates
