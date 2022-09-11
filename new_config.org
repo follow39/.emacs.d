@@ -30,7 +30,7 @@ My emacs configuration based on https://github.com/daviwil/dotfiles/blob/master/
 (setq native-comp-async-report-warnings-errors nil)
 
 ;; Set the right directory to store the native comp cache
-(add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
+;;(add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
 #+end_src
 
 * Package managment
@@ -84,7 +84,7 @@ My emacs configuration based on https://github.com/daviwil/dotfiles/blob/master/
 
 (setup-define :pkg
   (lambda (&rest recipe)
-    `(straight-use-package ',(dw/filter-straight-recipe recipe))))
+    `(straight-use-package ',(dw/filter-straight-recipe recipe)))
   :documentation "Install RECIPE via Guix or straight.el"
   :shorthand #'cadr)
 #+end_src
@@ -217,7 +217,7 @@ My emacs configuration based on https://github.com/daviwil/dotfiles/blob/master/
   (evil-global-set-key 'motion (kbd "<left>") 'dw/dont-arrow-me-bro)
   (evil-global-set-key 'motion (kbd "<right>") 'dw/dont-arrow-me-bro)
   (evil-global-set-key 'motion (kbd "<down>") 'dw/dont-arrow-me-bro)
-  (evil-global-set-key 'motion (kbd "<up>") 'dw/dont-arrow-me-bro))
+  (evil-global-set-key 'motion (kbd "<up>") 'dw/dont-arrow-me-bro)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
@@ -235,7 +235,7 @@ My emacs configuration based on https://github.com/daviwil/dotfiles/blob/master/
 ** Which key
 #+begin_src emacs-lisp
 (setup (:pkg which-key)
-  (diminish 'which-key-mode)
+  ;;(diminish 'which-key-mode)
   (which-key-mode)
   (setq which-key-idle-delay 0.3))
 #+end_src
@@ -327,34 +327,13 @@ Don't warn when advice is added for functions
 (setup (:pkg spacegray-theme))
 (setup (:pkg doom-themes))
 (load-theme 'doom-palenight t)
-(doom-themes-visual-bell-config))
+(doom-themes-visual-bell-config)
 #+end_src
 
 ** Font
 *** Set font
 Different platforms need different default font sizes, and Fira Mono is currently my favorite face.
 #+begin_src emacs-lisp
-;; Set the font face based on platform
-(pcase system-type
-  ((or 'gnu/linux 'windows-nt 'cygwin)
-   (set-face-attribute 'default nil
-                       :font "JetBrains Mono"
-                       :weight 'light
-                       :height (dw/system-settings-get 'emacs/default-face-size)))
-  ('darwin (set-face-attribute 'default nil :font "Fira Mono" :height 170)))
-
-;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil
-                    :font "JetBrains Mono"
-                    :weight 'light
-                    :height (dw/system-settings-get 'emacs/fixed-face-size))
-
-;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil
-                    ;; :font "Cantarell"
-                    :font "Iosevka Aile"
-                    :height (dw/system-settings-get 'emacs/variable-face-size)
-                    :weight 'light)
 #+end_src
 
 *** Emojis
@@ -377,72 +356,73 @@ Different platforms need different default font sizes, and Fira Mono is currentl
 
 *** Doom modeline
 #+begin_src emacs-lisp
-;; You must run (all-the-icons-install-fonts) one time after
-;; installing this package!
+  ;; You must run (all-the-icons-install-fonts) one time after
+  ;; installing this package!
 
-(setup (:pkg minions)
-  (:hook-into doom-modeline-mode))
+  (setup (:pkg minions)
+    (:hook-into doom-modeline-mode))
 
-(setup (:pkg doom-modeline)
-  (:hook-into after-init-hook)
-  (:option doom-modeline-height 15
-           doom-modeline-bar-width 6
-           doom-modeline-lsp t
-           doom-modeline-github nil
-           doom-modeline-mu4e nil
-           doom-modeline-irc nil
-           doom-modeline-minor-modes t
-           doom-modeline-persp-name nil
-           doom-modeline-buffer-file-name-style 'truncate-except-project
-           doom-modeline-major-mode-icon nil)
-  (custom-set-faces '(mode-line ((t (:height 0.85))))
-                    '(mode-line-inactive ((t (:height 0.85))))))
+  (setup (:pkg doom-modeline)
+    (:hook-into after-init-hook)
+    (:option doom-modeline-height 15
+	     doom-modeline-bar-width 6
+	     doom-modeline-lsp t
+	     doom-modeline-github nil
+	     doom-modeline-mu4e nil
+	     doom-modeline-irc nil
+	     doom-modeline-minor-modes t
+	     doom-modeline-persp-name nil
+	     doom-modeline-buffer-file-name-style 'truncate-except-project
+	     doom-modeline-major-mode-icon nil)
+    (custom-set-faces '(mode-line ((t (:height 0.85))))
+		      '(mode-line-inactive ((t (:height 0.85))))))
 #+end_src
 
 ** Workspaces
 #+begin_src emacs-lisp
-(setup (:pkg perspective)
-  (:global "C-M-k" persp-switch
-           "C-M-n" persp-next
-           "C-x k" persp-kill-buffer*)
-  (:option persp-initial-frame-name "Main")
-  ;; Running `persp-mode' multiple times resets the perspective list...
-  (unless (equal persp-mode t)
-    (persp-mode)))
+  (setup (:pkg perspective)
+    (:global "C-M-k" persp-switch
+	     "C-M-n" persp-next
+	     "C-x k" persp-kill-buffer*)
+    (:option persp-initial-frame-name "Main")
+    ;; Running `persp-mode' multiple times resets the perspective list...
+    ;;(unless (equal persp-mode t)
+    ;;  (persp-mode))
+  )
 #+end_src
 
 ** Notification
 alert is a library for showing notifications from other packages in a variety of ways
 #+begin_src emacs-lisp
-(setup (:pkg alert)
-  (:option alert-default-style 'notifications))
+  (setup (:pkg alert)
+    (:option alert-default-style 'notifications))
 #+end_src
 
 ** Auto-saving changed files
 #+begin_src emacs-lisp
-(setup (:pkg super-save)
-  (:delay)
-  (:when-loaded
-    (super-save-mode +1)
-    (diminish 'super-save-mode)
-    (setq super-save-auto-save-when-idle t)))
+  (setup (:pkg super-save)
+    (:delay)
+    (:when-loaded
+      (super-save-mode +1)
+      (diminish 'super-save-mode)
+      (setq super-save-auto-save-when-idle t)))
 #+end_src
 
 ** Auto-reverting changed files
 #+begin_src emacs-lisp
-;; Revert Dired and other buffers
-(setq global-auto-revert-non-file-buffers t)
+  ;; Revert Dired and other buffers
+  (setq global-auto-revert-non-file-buffers t)
 
-;; Revert buffers when the underlying file has changed
-(global-auto-revert-mode 1)
+  ;; Revert buffers when the underlying file has changed
+  (global-auto-revert-mode 1)
 #+end_src
 
 ** UI toggles
 #+begin_src emacs-lisp
-(dw/leader-key-def
-  "t"  '(:ignore t :which-key "toggles")
-  "tw" 'whitespace-mode
-  "tt" '(counsel-load-theme :which-key "choose theme"))
+  (dw/leader-key-def
+    "t"  '(:ignore t :which-key "toggles")
+    "tw" 'whitespace-mode
+    "tt" '(counsel-load-theme :which-key "choose theme"))
 #+end_src
 
 ** Highlight matching braces
