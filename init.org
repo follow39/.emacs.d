@@ -91,6 +91,32 @@ My emacs configuration based on https://github.com/daviwil/dotfiles/blob/master/
 - [[#development][Development]]
   - [[#git][Git]]
     - [[#magit][Magit]]
+    - [[#forge][Forge]]
+    - [[#magit-to-does][Magit to-does]]
+    - [[#git-link][Git-link]]
+    - [[#git-gutter][Git-gutter]]
+  - [[#projectile][Projectile]]
+  - [[#languages][Languages]]
+    - [[#lsp][LSP]]
+    - [[#dap][DAP]]
+    - [[#cc][C/C++]]
+    - [[#rust][Rust]]
+    - [[#emacs-lisp][Emacs lisp]]
+    - [[#yaml][YAML]]
+  - [[#productivity][Productivity]]
+    - [[#flycheck][Flycheck]]
+    - [[#smart-parents][Smart parents]]
+    - [[#rainbow-delimiters][Rainbow delimiters]]
+- [[#applications][Applications]]
+  - [[#eshell][Eshell]]
+    - [[#shell-commands][Shell commands]]
+      - [[#visual-commands][Visual commands]]
+      - [[#fish-competion][Fish competion]]
+      - [[#command-highlighting][Command highlighting]]
+      - [[#history-autocompletion][History autocompletion]]
+      - [[#toggling-eshell][Toggling eshell]]
+    - [[#vterm][Vterm]]
+- [[#runtime-performance][Runtime performance]]
 :END:
 
 * Startup performance
@@ -500,9 +526,9 @@ Different platforms need different default font sizes, and Fira Mono is currentl
     (setq dashboard-center-content t) ;; set to 't' for centered content
     (setq dashboard-set-navigator t)
     (setq dashboard-items '((recents . 7)
-          (agenda . 5 )))
-          ;;(bookmarks . 5)
-          ;;(projects . 5)))
+                            (agenda . 5 )
+                            (bookmarks . 5)
+                            (projects . 5)))
     (dashboard-setup-startup-hook))
 #+end_src
 
@@ -1313,5 +1339,428 @@ Emacs’ default buffer placement algorithm is pretty disruptive if you like set
 ** Git
 *** Magit
 #+begin_src emacs-lisp
+  (setup (:pkg magit)
+    (:also-load magit-todos)
+    (:global "C-M-;" magit-status)
+    (:option magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+#+end_src
 
+*** Forge
+#+begin_src emacs-lisp
+  (setup (:pkg forge)
+    (:disabled))
+#+end_src
+
+*** Magit to-does
+#+begin_src emacs-lisp
+  (setup (:pkg magit-todos))
+#+end_src
+
+*** Git-link
+#+begin_src emacs-lisp
+  (setup (:pkg git-link)
+    (setq git-link-open-in-browser t)
+    (dw/leader-key-def
+      "gL"  'git-link))
+#+end_src
+
+*** Git-gutter
+#+begin_src emacs-lisp
+  (setup (:pkg git-gutter :straight git-gutter-fringe)
+    (:hook-into text-mode prog-mode)
+    (setq git-gutter:update-interval 2)
+    (require 'git-gutter-fringe)
+    (set-face-foreground 'git-gutter-fr:added "LightGreen")
+    (fringe-helper-define 'git-gutter-fr:added nil
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        ".........."
+        ".........."
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        ".........."
+        ".........."
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        "XXXXXXXXXX")
+
+    (set-face-foreground 'git-gutter-fr:modified "LightGoldenrod")
+    (fringe-helper-define 'git-gutter-fr:modified nil
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        ".........."
+        ".........."
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        ".........."
+        ".........."
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        "XXXXXXXXXX")
+
+    (set-face-foreground 'git-gutter-fr:deleted "LightCoral")
+    (fringe-helper-define 'git-gutter-fr:deleted nil
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        ".........."
+        ".........."
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        ".........."
+        ".........."
+        "XXXXXXXXXX"
+        "XXXXXXXXXX"
+        "XXXXXXXXXX")
+
+    ;; These characters are used in terminal mode
+    (setq git-gutter:modified-sign "≡")
+    (setq git-gutter:added-sign "≡")
+    (setq git-gutter:deleted-sign "≡")
+    (set-face-foreground 'git-gutter:added "LightGreen")
+    (set-face-foreground 'git-gutter:modified "LightGoldenrod")
+    (set-face-foreground 'git-gutter:deleted "LightCoral"))
+#+end_src
+
+** Projectile
+#+begin_src emacs-lisp
+  (defun dw/switch-project-action ()
+    "Switch to a workspace with the project name and start `magit-status'."
+    ;; TODO: Switch to EXWM workspace 1?
+    (persp-switch (projectile-project-name))
+    (magit-status))
+
+  (setup (:pkg projectile)
+    (when (file-directory-p "~/Documents/projects")
+      (setq projectile-project-search-path '("~/Documents/projects")))
+    ;; (setq projectile-switch-project-action #'dw/switch-project-action)
+
+    (projectile-mode)
+
+    (:global "C-M-p" projectile-find-file
+             "C-c p" projectile-command-map)
+
+    (dw/leader-key-def
+      "pf"  'projectile-find-file
+      "ps"  'projectile-switch-project
+      "pF"  'consult-ripgrep
+      "pp"  'projectile-find-file
+      "pc"  'projectile-compile-project
+      "pd"  'projectile-dired))
+#+end_src
+
+** Languages
+*** LSP
+#+begin_src emacs-lisp
+  (setup (:pkg lsp-mode :straight t)
+    (:hook-into rust-mode rustic-mode c-mode c++-mode)
+    (:bind "TAB" completion-at-point)
+    (:option lsp-headerline-breadcrumb-enable nil)
+
+    (dw/leader-key-def
+      "l" '(:ignore t :which-key "lsp")
+      "ld" 'xref-find-definitions
+      "lr" 'xref-find-references
+      "ln" 'lsp-ui-find-next-reference
+      "lp" 'lsp-ui-find-prev-reference
+      "ls" 'counsel-imenu
+      "le" 'lsp-ui-flycheck-list
+      "lS" 'lsp-ui-sideline-mode
+      "lX" 'lsp-execute-code-action))
+
+  (setup (:pkg lsp-ui :straight t)
+    (:hook-into lsp-mode)
+    (:when-loaded
+     (progn
+       (setq lsp-ui-sideline-enable t)
+       (setq lsp-ui-sideline-show-hover nil)
+       (setq lsp-ui-doc-position 'bottom)
+       (lsp-ui-doc-show))))
+#+end_src
+
+*** DAP
+#+begin_src emacs-lisp
+  (setup (:pkg dap-mode :straight t)
+    ;; Assuming that `dap-debug' will invoke all this
+    (:when-loaded
+      (:option lsp-enable-dap-auto-configure nil)
+      (dap-ui-mode 1)
+      (dap-tooltip-mode 1))
+
+      (require 'dap-lldb)
+      (require 'dap-gdb-lldb)
+      ;; installs .extension/vscode
+      (dap-gdb-lldb-setup)
+      (dap-register-debug-template
+       "Rust::LLDB Run Configuration"
+       (list :type "lldb"
+             :request "launch"
+             :name "LLDB::Run"
+             :gdbpath "rust-lldb"
+             ;; uncomment if lldb-mi is not in PATH
+             ;; :lldbmipath "/usr/local/bin/lldb-mi"
+             )))
+#+end_src
+
+*** C/C++
+#+begin_src emacs-lisp
+  (setup (:pkg ccls)
+    (:hook lsp)
+    (:hook-into c-mode c++-mode objc-mode cuda-mode))
+#+end_src
+
+*** Rust
+#+begin_src emacs-lisp
+  (setup (:pkg rustic)
+    (:file-match "\\.rs\\'")
+    (setq rustic-format-on-save t))
+
+  (setup (:pkg cargo :straight t))
+#+end_src
+
+*** Emacs lisp
+#+begin_src emacs-lisp
+  (setup emacs-lisp-mode
+    (:hook flycheck-mode))
+
+  (setup (:pkg helpful)
+    (:option counsel-describe-function-function #'helpful-callable
+             counsel-describe-variable-function #'helpful-variable)
+    (:global [remap describe-function] helpful-function
+             [remap describe-symbol] helpful-symbol
+             [remap describe-variable] helpful-variable
+             [remap describe-command] helpful-command
+             [remap describe-key] helpful-key))
+
+  (dw/leader-key-def
+    "e"   '(:ignore t :which-key "eval")
+    "eb"  '(eval-buffer :which-key "eval buffer"))
+
+  (dw/leader-key-def
+    :keymaps '(visual)
+    "er" '(eval-region :which-key "eval region"))
+#+end_src
+
+*** YAML
+#+begin_src emacs-lisp
+  (setup (:pkg yaml-mode)
+    (:file-match "\\.ya?ml\\'"))
+#+end_src
+
+** Productivity
+*** Flycheck
+#+begin_src emacs-lisp
+  (setup (:pkg flycheck)
+    (:hook-into lsp-mode))
+#+end_src
+
+*** Smart parents
+#+begin_src emacs-lisp
+  (setup (:pkg smartparens)
+    (:hook-into prog-mode))
+#+end_src
+
+*** Rainbow delimiters
+#+begin_src emacs-lisp
+  (setup (:pkg rainbow-delimiters)
+    (:hook-into prog-mode))
+#+end_src
+
+* Applications
+** Eshell
+#+begin_src emacs-lisp
+  (defun read-file (file-path)
+    (with-temp-buffer
+      (insert-file-contents file-path)
+      (buffer-string)))
+
+  (defun dw/get-current-package-version ()
+    (interactive)
+    (let ((package-json-file (concat (eshell/pwd) "/package.json")))
+      (when (file-exists-p package-json-file)
+        (let* ((package-json-contents (read-file package-json-file))
+               (package-json (ignore-errors (json-parse-string package-json-contents))))
+          (when package-json
+            (ignore-errors (gethash "version" package-json)))))))
+
+  (defun dw/map-line-to-status-char (line)
+    (cond ((string-match "^?\\? " line) "?")))
+
+  (defun dw/get-git-status-prompt ()
+    (let ((status-lines (cdr (process-lines "git" "status" "--porcelain" "-b"))))
+      (seq-uniq (seq-filter 'identity (mapcar 'dw/map-line-to-status-char status-lines)))))
+
+  (defun dw/get-prompt-path ()
+    (let* ((current-path (eshell/pwd))
+           (git-output (shell-command-to-string "git rev-parse --show-toplevel"))
+           (has-path (not (string-match "^fatal" git-output))))
+      (if (not has-path)
+        (abbreviate-file-name current-path)
+        (string-remove-prefix (file-name-directory git-output) current-path))))
+
+  ;; This prompt function mostly replicates my custom zsh prompt setup
+  ;; that is powered by github.com/denysdovhan/spaceship-prompt.
+  (defun dw/eshell-prompt ()
+    (let ((current-branch (magit-get-current-branch))
+          (package-version (dw/get-current-package-version)))
+      (concat
+       "\n"
+       (propertize (system-name) 'face `(:foreground "#62aeed"))
+       (propertize " ॐ " 'face `(:foreground "white"))
+       (propertize (dw/get-prompt-path) 'face `(:foreground "#82cfd3"))
+       (when current-branch
+         (concat
+          (propertize " • " 'face `(:foreground "white"))
+          (propertize (concat " " current-branch) 'face `(:foreground "#c475f0"))))
+       (when package-version
+         (concat
+          (propertize " @ " 'face `(:foreground "white"))
+          (propertize package-version 'face `(:foreground "#e8a206"))))
+       (propertize " • " 'face `(:foreground "white"))
+       (propertize (format-time-string "%I:%M:%S %p") 'face `(:foreground "#5a5b7f"))
+       (if (= (user-uid) 0)
+           (propertize "\n#" 'face `(:foreground "red2"))
+         (propertize "\nλ" 'face `(:foreground "#aece4a")))
+       (propertize " " 'face `(:foreground "white")))))
+
+  (add-hook 'eshell-banner-load-hook
+            (lambda ()
+              (setq eshell-banner-message
+                    (concat "\n" (propertize " " 'display (create-image "~/.dotfiles/.emacs.d/images/flux_banner.png" 'png nil :scale 0.2 :align-to "center")) "\n\n"))))
+
+  (defun dw/eshell-configure ()
+    ;; Make sure magit is loaded
+    (require 'magit)
+
+    (require 'evil-collection-eshell)
+    (evil-collection-eshell-setup)
+
+    (setup (:pkg xterm-color))
+
+    (push 'eshell-tramp eshell-modules-list)
+    (push 'xterm-color-filter eshell-preoutput-filter-functions)
+    (delq 'eshell-handle-ansi-color eshell-output-filter-functions)
+
+    ;; Save command history when commands are entered
+    (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+    (add-hook 'eshell-before-prompt-hook
+              (lambda ()
+                (setq xterm-color-preserve-properties t)))
+
+    ;; Truncate buffer for performance
+    (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+    ;; We want to use xterm-256color when running interactive commands
+    ;; in eshell but not during other times when we might be launching
+    ;; a shell command to gather its output.
+    (add-hook 'eshell-pre-command-hook
+              (lambda () (setenv "TERM" "xterm-256color")))
+    (add-hook 'eshell-post-command-hook
+              (lambda () (setenv "TERM" "dumb")))
+
+    ;; Use completion-at-point to provide completions in eshell
+    (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point)
+
+    ;; Initialize the shell history
+    (eshell-hist-initialize)
+
+    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'consult-history)
+    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
+    (evil-normalize-keymaps)
+
+    (setenv "PAGER" "cat")
+
+    (setq eshell-prompt-function      'dw/eshell-prompt
+          eshell-prompt-regexp        "^λ "
+          eshell-history-size         10000
+          eshell-buffer-maximum-lines 10000
+          eshell-hist-ignoredups t
+          eshell-highlight-prompt t
+          eshell-scroll-to-bottom-on-input t
+          eshell-prefer-lisp-functions nil))
+
+  (setup eshell
+    (add-hook 'eshell-first-time-mode-hook #'dw/eshell-configure)
+    (setq eshell-directory-name "~/.dotfiles/.emacs.d/eshell/"
+          eshell-aliases-file (expand-file-name "~/.dotfiles/.emacs.d/eshell/alias")))
+
+  (setup (:pkg eshell-z)
+    (:disabled) ;; Using consult-dir for this now
+    (add-hook 'eshell-mode-hook (lambda () (require 'eshell-z)))
+    (add-hook 'eshell-z-change-dir-hook (lambda () (eshell/pushd (eshell/pwd)))))
+
+  (setup (:pkg exec-path-from-shell)
+    (setq exec-path-from-shell-check-startup-files nil)
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize)))
+
+  (dw/leader-key-def
+    "SPC" 'eshell)
+#+end_src
+
+*** Shell commands
+**** Visual commands
+#+begin_src emacs-lisp
+  (with-eval-after-load 'esh-opt
+    (setq eshell-destroy-buffer-when-process-dies t)
+    (setq eshell-visual-commands '("htop" "zsh" "vim" "rush")))
+#+end_src
+
+**** Fish competion
+#+begin_src emacs-lisp
+  (setup (:pkg fish-completion)
+    (:disabled)
+    (:hook-into eshell-mode))
+#+end_src
+
+**** Command highlighting
+#+begin_src emacs-lisp
+  (setup (:pkg eshell-syntax-highlighting)
+    (:load-after eshell
+      (eshell-syntax-highlighting-global-mode +1)))
+#+end_src
+
+**** History autocompletion
+#+begin_src emacs-lisp
+  (defun dw/esh-autosuggest-setup ()
+    (require 'company)
+    (set-face-foreground 'company-preview-common "#4b5668")
+    (set-face-background 'company-preview nil))
+
+  (setup (:pkg esh-autosuggest)
+    (require 'esh-autosuggest)
+    (setq esh-autosuggest-delay 0.5)
+    (:hook dw/esh-autosuggest-setup)
+    (:hook-into eshell-mode))
+#+end_src
+
+**** Toggling eshell
+#+begin_src emacs-lisp
+  (setup (:pkg eshell-toggle)
+    (:disabled)
+    (:global "C-M-'" eshell-toggle)
+    (:option eshell-toggle-size-fraction 3
+             eshell-toggle-use-projectile-root t
+             eshell-toggle-run-command nil))
+#+end_src
+
+*** Vterm
+#+begin_src emacs-lisp
+  (setup (:pkg vterm)
+    (:when-loaded
+     (progn
+       (setq vterm-max-scrollback 10000)
+       (advice-add 'evil-collection-vterm-insert :before #'vterm-reset-cursor-point))))
+#+end_src
+
+* Runtime performance
+#+begin_src emacs-lisp
+  ;; Make gc pauses faster by decreasing the threshold.
+  (setq gc-cons-threshold (* 2 1000 1000))
 #+end_src
