@@ -1,6 +1,4 @@
-*
-!.gitignore
-!config.org
-!new_config.org
-!init.el
-!init.org
+*#
+*~
+straight/
+history
