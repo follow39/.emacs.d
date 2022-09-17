@@ -102,6 +102,7 @@ My emacs configuration based on https://github.com/daviwil/dotfiles/blob/master/
     - [[#cc][C/C++]]
     - [[#rust][Rust]]
     - [[#emacs-lisp][Emacs lisp]]
+    - [[#python][Python]]
     - [[#yaml][YAML]]
   - [[#productivity][Productivity]]
     - [[#flycheck][Flycheck]]
@@ -858,58 +859,58 @@ Emacs’ default buffer placement algorithm is pretty disruptive if you like set
 * File browsing
 ** Dired
 #+begin_src emacs-lisp
-  (setup (:pkg all-the-icons-dired))
-  (setup (:pkg dired-single))
-  (setup (:pkg dired-ranger))
-  (setup (:pkg dired-collapse))
+    (setup (:pkg all-the-icons-dired))
+    (setup (:pkg dired-single))
+    (setup (:pkg dired-ranger))
+    (setup (:pkg dired-collapse))
 
-  (setup dired
-    (setq dired-listing-switches "-agho --group-directories-first"
-          dired-omit-files "^\\.[^.].*"
-          dired-omit-verbose nil
-          dired-hide-details-hide-symlink-targets nil
-          delete-by-moving-to-trash t)
+    (setup dired
+      (setq dired-listing-switches "-agho --group-directories-first"
+            dired-omit-files "^\\.[^.].*"
+            dired-omit-verbose nil
+            dired-hide-details-hide-symlink-targets nil
+            delete-by-moving-to-trash t)
 
-    (autoload 'dired-omit-mode "dired-x")
+      (autoload 'dired-omit-mode "dired-x")
 
-    (add-hook 'dired-load-hook
-              (lambda ()
-                (interactive)
-                (dired-collapse)))
+      (add-hook 'dired-load-hook
+                (lambda ()
+                  (interactive)
+                  (dired-collapse-mode)))
 
-    (add-hook 'dired-mode-hook
-              (lambda ()
-                (interactive)
-                (dired-omit-mode 1)
-                (dired-hide-details-mode 1)
-                (all-the-icons-dired-mode 1)
-                (hl-line-mode 1)))
+      (add-hook 'dired-mode-hook
+                (lambda ()
+                  (interactive)
+                  (dired-omit-mode 1)
+                  (dired-hide-details-mode 1)
+                  (all-the-icons-dired-mode 1)
+                  (hl-line-mode 1)))
 
-    (when (eq system-type 'darwin)
-      (setq insert-directory-program "/opt/homebrew/bin/gls")))
+      (when (eq system-type 'darwin)
+        (setq insert-directory-program "/opt/homebrew/bin/gls")))
 
-  (setup (:pkg dired-rainbow)
-    (:load-after dired
-     (dired-rainbow-define-chmod directory "#6cb2eb" "d.*")
-     (dired-rainbow-define html "#eb5286" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
-     (dired-rainbow-define xml "#f2d024" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
-     (dired-rainbow-define document "#9561e2" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
-     (dired-rainbow-define markdown "#ffed4a" ("org" "etx" "info" "markdown" "md" "mkd" "nfo" "pod" "rst" "tex" "textfile" "txt"))
-     (dired-rainbow-define database "#6574cd" ("xlsx" "xls" "csv" "accdb" "db" "mdb" "sqlite" "nc"))
-     (dired-rainbow-define media "#de751f" ("mp3" "mp4" "mkv" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
-     (dired-rainbow-define image "#f66d9b" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
-     (dired-rainbow-define log "#c17d11" ("log"))
-     (dired-rainbow-define shell "#f6993f" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
-     (dired-rainbow-define interpreted "#38c172" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
-     (dired-rainbow-define compiled "#4dc0b5" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
-     (dired-rainbow-define executable "#8cc4ff" ("exe" "msi"))
-     (dired-rainbow-define compressed "#51d88a" ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
-     (dired-rainbow-define packaged "#faad63" ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
-     (dired-rainbow-define encrypted "#ffed4a" ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
-     (dired-rainbow-define fonts "#6cb2eb" ("afm" "fon" "fnt" "pfb" "pfm" "ttf" "otf"))
-     (dired-rainbow-define partition "#e3342f" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
-     (dired-rainbow-define vc "#0074d9" ("git" "gitignore" "gitattributes" "gitmodules"))
-     (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")))
+    (setup (:pkg dired-rainbow)
+      (:load-after dired
+       (dired-rainbow-define-chmod directory "#6cb2eb" "d.*")
+       (dired-rainbow-define html "#eb5286" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
+       (dired-rainbow-define xml "#f2d024" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
+       (dired-rainbow-define document "#9561e2" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
+       (dired-rainbow-define markdown "#ffed4a" ("org" "etx" "info" "markdown" "md" "mkd" "nfo" "pod" "rst" "tex" "textfile" "txt"))
+       (dired-rainbow-define database "#6574cd" ("xlsx" "xls" "csv" "accdb" "db" "mdb" "sqlite" "nc"))
+       (dired-rainbow-define media "#de751f" ("mp3" "mp4" "mkv" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
+       (dired-rainbow-define image "#f66d9b" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
+       (dired-rainbow-define log "#c17d11" ("log"))
+       (dired-rainbow-define shell "#f6993f" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
+       (dired-rainbow-define interpreted "#38c172" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
+       (dired-rainbow-define compiled "#4dc0b5" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
+       (dired-rainbow-define executable "#8cc4ff" ("exe" "msi"))
+       (dired-rainbow-define compressed "#51d88a" ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
+       (dired-rainbow-define packaged "#faad63" ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
+       (dired-rainbow-define encrypted "#ffed4a" ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
+       (dired-rainbow-define fonts "#6cb2eb" ("afm" "fon" "fnt" "pfb" "pfm" "ttf" "otf"))
+       (dired-rainbow-define partition "#e3342f" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
+       (dired-rainbow-define vc "#0074d9" ("git" "gitignore" "gitattributes" "gitmodules"))
+       (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")))
 #+end_src
 
 * Org mode
@@ -1362,7 +1363,7 @@ Emacs’ default buffer placement algorithm is pretty disruptive if you like set
 *** LSP
 #+begin_src emacs-lisp
   (setup (:pkg lsp-mode :straight t)
-    (:hook-into rustic-mode c-mode c++-mode)
+    (:hook-into rustic-mode c-mode c++-mode python-mode)
     (:bind "TAB" completion-at-point)
     (:option lsp-headerline-breadcrumb-enable nil
              ;; what to use when checking on-save. "check" is default, I prefer clippy
@@ -1459,6 +1460,13 @@ Emacs’ default buffer placement algorithm is pretty disruptive if you like set
   (dw/leader-key-def
     :keymaps '(visual)
     "er" '(eval-region :which-key "eval region"))
+#+end_src
+
+*** Python
+#+begin_src emacs-lisp
+  (setup (:pkg lsp-pyright :host github :repo "emacs-lsp/lsp-pyright")
+    (:hook lsp)
+    (:hook-into python-mode))
 #+end_src
 
 *** YAML

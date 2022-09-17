@@ -545,7 +545,7 @@ folder, otherwise delete a word"
   (add-hook 'dired-load-hook
             (lambda ()
               (interactive)
-              (dired-collapse)))
+              (dired-collapse-mode)))
 
   (add-hook 'dired-mode-hook
             (lambda ()
@@ -980,7 +980,7 @@ _d_: date        ^ ^              ^ ^
     "pd"  'projectile-dired))
 
 (setup (:pkg lsp-mode :straight t)
-  (:hook-into rustic-mode c-mode c++-mode)
+  (:hook-into rustic-mode c-mode c++-mode python-mode)
   (:bind "TAB" completion-at-point)
   (:option lsp-headerline-breadcrumb-enable nil
            ;; what to use when checking on-save. "check" is default, I prefer clippy
@@ -1065,6 +1065,10 @@ _d_: date        ^ ^              ^ ^
 (dw/leader-key-def
   :keymaps '(visual)
   "er" '(eval-region :which-key "eval region"))
+
+(setup (:pkg lsp-pyright :host github :repo "emacs-lsp/lsp-pyright")
+  (:hook lsp)
+  (:hook-into python-mode))
 
 (setup (:pkg yaml-mode)
   (:file-match "\\.ya?ml\\'"))
