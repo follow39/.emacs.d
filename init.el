@@ -108,72 +108,15 @@
 
 (set-default-coding-systems 'utf-8)
 
+(setup (:pkg undo-tree)
+  (setq undo-tree-auto-save-history nil)
+  (global-undo-tree-mode 1))
+
 ;;(server-start)
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (global-set-key (kbd "C-M-u") 'universal-argument)
-
-(setup (:pkg undo-tree)
-  (setq undo-tree-auto-save-history nil)
-  (global-undo-tree-mode 1))
-
-(setup (:pkg evil)
-  ;; Pre-load configuration
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-want-C-i-jump nil)
-  (setq evil-respect-visual-line-mode t)
-  (setq evil-undo-system 'undo-tree)
-
-  ;; Activate the Evil
-  (evil-mode 1)
-
-  ;; Set Emacs state modes
-  (dolist (mode '(custom-mode
-                  eshell-mode
-                  git-rebase-mode
-                  erc-mode
-                  circe-server-mode
-                  circe-chat-mode
-                  circe-query-mode
-                  sauron-mode
-                  term-mode))
-    (add-to-list 'evil-emacs-state-modes mode))
-
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-
-  ;; Use visual line motions even outside of visual-line-mode buffers
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
-  (defun dw/dont-arrow-me-bro ()
-    (interactive)
-    (message "Arrow keys are bad, you know?"))
-
-    ;; Disable arrow keys in normal and visual modes
-  (define-key evil-normal-state-map (kbd "<left>") 'dw/dont-arrow-me-bro)
-  (define-key evil-normal-state-map (kbd "<right>") 'dw/dont-arrow-me-bro)
-  (define-key evil-normal-state-map (kbd "<down>") 'dw/dont-arrow-me-bro)
-  (define-key evil-normal-state-map (kbd "<up>") 'dw/dont-arrow-me-bro)
-  (evil-global-set-key 'motion (kbd "<left>") 'dw/dont-arrow-me-bro)
-  (evil-global-set-key 'motion (kbd "<right>") 'dw/dont-arrow-me-bro)
-  (evil-global-set-key 'motion (kbd "<down>") 'dw/dont-arrow-me-bro)
-  (evil-global-set-key 'motion (kbd "<up>") 'dw/dont-arrow-me-bro)
-
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
-
-(setup (:pkg evil-collection)
-  ;; Is this a bug in evil-collection?
-  (setq evil-collection-company-use-tng nil)
-  (:load-after evil
-    (:option evil-collection-outline-bind-tab-p nil
-             (remove evil-collection-mode-list) 'lispy
-             (remove evil-collection-mode-list) 'org-present)
-    (evil-collection-init)))
 
 (setup (:pkg which-key)
   ;;(diminish 'which-key-mode)
@@ -181,8 +124,6 @@
   (setq which-key-idle-delay 0.3))
 
 (setup (:pkg general)
-  (general-evil-setup t)
-
   (general-create-definer dw/leader-key-def
     :keymaps '(normal insert visual emacs)
     :prefix "SPC"
@@ -306,7 +247,7 @@
   (setq dashboard-items '((recents . 7)
                           (agenda . 5 )
                           (bookmarks . 5)
-                          (projects . 5)))
+                          (projects . 10)))
   (dashboard-setup-startup-hook))
 
 (setup (:pkg alert)
@@ -356,7 +297,6 @@
 ;; (setq server-window #'dw/show-server-edit-buffer)
 
 (setq-default tab-width 2)
-(setq-default evil-shift-width tab-width)
 
 (setq-default indent-tabs-mode nil)
 
@@ -376,7 +316,6 @@
   (setq parinfer-extensions
         '(defaults                 ; should be included.
            pretty-parens           ; different paren styles for different modes.
-           evil                    ; If you use Evil.
            smart-tab               ; C-b & C-f jump positions and smart shift with tab & S-tab.
            smart-yank))            ; Yank behavior depend on mode.
 
@@ -392,11 +331,6 @@
 (setup savehist
   (setq history-length 25)
   (savehist-mode 1))
-
-;; Individual history elements can be configured separately
-;;(put 'minibuffer-history 'history-length 25)
-;;(put 'evil-ex-history 'history-length 50)
-;;(put 'kill-ring 'history-length 25))
 
 (defun dw/minibuffer-backward-kill (arg)
   "When minibuffer is completing a file name delete up to parent
@@ -423,7 +357,7 @@ folder, otherwise delete a word"
   (:option vertico-cycle t)
   (custom-set-faces '(vertico-current ((t (:background "#3a3f5a"))))))
 
-(setup (:pkg corfu :repo "https://github.com/minad/corfu")
+(setup (:pkg corfu :host github :repo "stminad/corfu")
   (:with-map corfu-map
     (:bind "C-j" corfu-next
            "C-k" corfu-previous
@@ -514,14 +448,9 @@ folder, otherwise delete a word"
   (:when-loaded
    (progn
      :config
-     (evil-collection-define-key 'normal 'bufler-list-mode-map
-       (kbd "RET") 'bufler-list-buffer-switch
-       (kbd "M-RET") 'bufler-list-buffer-peek
-       "D" 'bufler-list-buffer-kill)
-
      (setf bufler-groups
            (bufler-defgroups
-            ;; Subgroup collecting all named workspaces.
+             ;; Subgroup collecting all named workspaces.
             (group (auto-workspace))
             ;; Subgroup collecting buffers in a projectile project.
             (group (auto-projectile))
@@ -568,9 +497,7 @@ folder, otherwise delete a word"
   (ace-window-display-mode 1))
 
 (setup winner
-  (winner-mode)
-  (define-key evil-window-map "u" 'winner-undo)
-  (define-key evil-window-map "U" 'winner-redo))
+  (winner-mode))
 
 (setup (:pkg visual-fill-column)
   (setq visual-fill-column-width 110
@@ -628,13 +555,6 @@ folder, otherwise delete a word"
               (all-the-icons-dired-mode 1)
               (hl-line-mode 1)))
 
-  (evil-collection-define-key 'normal 'dired-mode-map
-    "h" 'dired-single-up-directory
-    "H" 'dired-omit-mode
-    "l" 'dired-single-buffer
-    "y" 'dired-ranger-copy
-    "X" 'dired-ranger-move
-    "p" 'dired-ranger-paste)
   (when (eq system-type 'darwin)
     (setq insert-directory-program "/opt/homebrew/bin/gls")))
 
@@ -670,7 +590,6 @@ folder, otherwise delete a word"
   (variable-pitch-mode 1)
   (auto-fill-mode 0)
   (visual-line-mode 1)
-  (setq evil-auto-indent nil)
   (diminish org-indent-mode))
 
 (setup (:pkg org)
@@ -702,12 +621,6 @@ folder, otherwise delete a word"
   (setq org-outline-path-complete-in-steps nil)
   (setq org-refile-use-outline-path t)
 
-  (evil-define-key '(normal insert visual) org-mode-map (kbd "C-j")     'org-next-visible-heading)
-  (evil-define-key '(normal insert visual) org-mode-map (kbd "C-k") 'org-previous-visible-heading)
-
-  (evil-define-key '(normal insert visual) org-mode-map (kbd "M-j") 'org-metadown)
-  (evil-define-key '(normal insert visual) org-mode-map (kbd "M-k") 'org-metaup)
-
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -724,7 +637,7 @@ folder, otherwise delete a word"
  ;; Replace list hyphen with dot
  (font-lock-add-keywords 'org-mode
                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
  (setup org-faces
    ;; Make sure org-indent face is available
@@ -770,13 +683,6 @@ folder, otherwise delete a word"
     (add-to-list 'org-structure-template-alist '("json" . "src json"))))
 
 ;;(require 'org-protocol)
-
-(setup (:pkg evil-org)
-  (:hook-into org-mode org-agenda-mode)
-  (require 'evil-org)
-  (require 'evil-org-agenda)
-  (evil-org-set-key-theme '(navigation todo insert textobjects additional))
-  (evil-org-agenda-set-keys))
 
 (dw/leader-key-def
   "o"   '(:ignore t :which-key "org mode")
@@ -1052,7 +958,6 @@ _d_: date        ^ ^              ^ ^
 
 (defun dw/switch-project-action ()
   "Switch to a workspace with the project name and start `magit-status'."
-  ;; TODO: Switch to EXWM workspace 1?
   (persp-switch (projectile-project-name))
   (magit-status))
 
@@ -1075,9 +980,21 @@ _d_: date        ^ ^              ^ ^
     "pd"  'projectile-dired))
 
 (setup (:pkg lsp-mode :straight t)
-  (:hook-into rust-mode rustic-mode c-mode c++-mode)
+  (:hook-into rustic-mode c-mode c++-mode)
   (:bind "TAB" completion-at-point)
-  (:option lsp-headerline-breadcrumb-enable nil)
+  (:option lsp-headerline-breadcrumb-enable nil
+           ;; what to use when checking on-save. "check" is default, I prefer clippy
+           lsp-rust-analyzer-cargo-watch-command "clippy"
+           lsp-eldoc-render-all t
+           lsp-idle-delay 0.6
+           ;; enable / disable the hints as you prefer:
+           lsp-rust-analyzer-server-display-inlay-hints t
+           lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
+           lsp-rust-analyzer-display-chaining-hints t
+           lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil
+           lsp-rust-analyzer-display-closure-return-type-hints t
+           lsp-rust-analyzer-display-parameter-hints nil
+           lsp-rust-analyzer-display-reborrow-hints nil)
 
   (dw/leader-key-def
     "l" '(:ignore t :which-key "lsp")
@@ -1093,11 +1010,11 @@ _d_: date        ^ ^              ^ ^
 (setup (:pkg lsp-ui :straight t)
   (:hook-into lsp-mode)
   (:when-loaded
-   (progn
-     (setq lsp-ui-sideline-enable t)
-     (setq lsp-ui-sideline-show-hover nil)
-     (setq lsp-ui-doc-position 'bottom)
-     (lsp-ui-doc-show))))
+    (progn
+      (setq lsp-ui-sideline-enable t)
+      (setq lsp-ui-sideline-show-hover nil)
+      (setq lsp-ui-doc-position 'bottom)
+      (lsp-ui-doc-show))))
 
 (setup (:pkg dap-mode :straight t)
   ;; Assuming that `dap-debug' will invoke all this
@@ -1121,14 +1038,13 @@ _d_: date        ^ ^              ^ ^
            )))
 
 (setup (:pkg ccls)
+  (setq ccls-executable "ccls")
   (:hook lsp)
   (:hook-into c-mode c++-mode objc-mode cuda-mode))
 
 (setup (:pkg rustic)
   (:file-match "\\.rs\\'")
   (setq rustic-format-on-save t))
-
-(setup (:pkg cargo :straight t))
 
 (setup emacs-lisp-mode
   (:hook flycheck-mode))
@@ -1225,9 +1141,6 @@ _d_: date        ^ ^              ^ ^
   ;; Make sure magit is loaded
   (require 'magit)
 
-  (require 'evil-collection-eshell)
-  (evil-collection-eshell-setup)
-
   (setup (:pkg xterm-color))
 
   (push 'eshell-tramp eshell-modules-list)
@@ -1257,10 +1170,6 @@ _d_: date        ^ ^              ^ ^
 
   ;; Initialize the shell history
   (eshell-hist-initialize)
-
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'consult-history)
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
-  (evil-normalize-keymaps)
 
   (setenv "PAGER" "cat")
 
@@ -1324,8 +1233,7 @@ _d_: date        ^ ^              ^ ^
 (setup (:pkg vterm)
   (:when-loaded
    (progn
-     (setq vterm-max-scrollback 10000)
-     (advice-add 'evil-collection-vterm-insert :before #'vterm-reset-cursor-point))))
+     (setq vterm-max-scrollback 10000))))
 
 ;; Make gc pauses faster by decreasing the threshold.
 (setq gc-cons-threshold (* 2 1000 1000))
