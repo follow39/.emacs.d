@@ -357,7 +357,7 @@ folder, otherwise delete a word"
   (:option vertico-cycle t)
   (custom-set-faces '(vertico-current ((t (:background "#3a3f5a"))))))
 
-(setup (:pkg corfu :host github :repo "stminad/corfu")
+(setup (:pkg corfu :host github :repo "minad/corfu")
   (:with-map corfu-map
     (:bind "C-j" corfu-next
            "C-k" corfu-previous
