@@ -511,10 +511,10 @@ folder, otherwise delete a word"
 (setup winner
   (winner-mode))
 
-(setup (:pkg visual-fill-column)
-  (setq visual-fill-column-width 110
-        visual-fill-column-center-text t)
-  (:hook-into org-mode prog-mode))
+(setup (:pkg visual-fill-column :repo "https://codeberg.org/joostkremers/visual-fill-column.git")
+  (:option visual-fill-column-width 110
+           visual-fill-column-center-text t)
+  (:hook-into org-mode))
 
 ;; (setq display-buffer-base-action
 ;;       '(display-buffer-reuse-mode-window

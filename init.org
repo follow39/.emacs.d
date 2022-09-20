@@ -831,10 +831,10 @@ Emacs can be prompted for the PIN of GPG private keys, we just need to set epa-p
 
 ** Set margins for mods
 #+begin_src emacs-lisp
-  (setup (:pkg visual-fill-column)
-    (setq visual-fill-column-width 110
-          visual-fill-column-center-text t)
-    (:hook-into org-mode prog-mode))
+  (setup (:pkg visual-fill-column :repo "https://codeberg.org/joostkremers/visual-fill-column.git")
+    (:option visual-fill-column-width 110
+             visual-fill-column-center-text t)
+    (:hook-into org-mode))
 #+end_src
 
 ** Controll buffer placement
