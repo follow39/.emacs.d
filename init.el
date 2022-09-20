@@ -124,10 +124,10 @@
   (setq which-key-idle-delay 0.3))
 
 (setup (:pkg general)
-  (general-create-definer dw/leader-key-def
-    :keymaps '(normal insert visual emacs)
-    :prefix "SPC"
-    :global-prefix "C-SPC")
+  ;; (general-create-definer dw/leader-key-def
+  ;;   :keymaps '(normal insert visual emacs)
+  ;;   :prefix "SPC"
+  ;;   :global-prefix "C-SPC")
 
   (general-create-definer dw/ctrl-c-keys
     :prefix "C-c"))
@@ -152,8 +152,8 @@
 (setq use-dialog-box nil) ;; Disable dialog boxes since they weren't working in Mac OSX
 (setq scroll-margin 13) ;; set scroll margin value
 
-;;(set-frame-parameter (selected-frame) 'alpha '(95 . 95))
-;;(add-to-list 'default-frame-alist '(alpha . (95 . 95)))
+;; (set-frame-parameter (selected-frame) 'alpha '(99 . 99))
+;; (add-to-list 'default-frame-alist '(alpha . (99 . 99)))
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
@@ -226,15 +226,12 @@
         '(mode-line-inactive ((t (:height 0.85))))))
 
 (setup (:pkg perspective)
-  (:global "C-M-k" persp-switch
-     "C-M-n" persp-next
-     "C-x k" persp-kill-buffer*)
   (:option persp-initial-frame-name "Main")
   (customize-set-variable 'persp-mode-prefix-key (kbd "C-c M-p"))
   ;; Running `persp-mode' multiple times resets the perspective list...
   (unless (equal persp-mode t)
     (persp-mode))
-)
+  )
 
 (setup (:pkg dashboard)
   (setq dashboard-set-heading-icons t)
@@ -253,12 +250,12 @@
 (setup (:pkg alert)
   (:option alert-default-style 'notifications))
 
-(setup (:pkg super-save)
-  (:delay)
-  (:when-loaded
-    (super-save-mode +1)
-    (diminish 'super-save-mode)
-    (setq super-save-auto-save-when-idle t)))
+;; (setup (:pkg super-save)
+;;   (:delay)
+;;   (:when-loaded
+;;     (super-save-mode +1)
+;;     (diminish 'super-save-mode)
+;;     (setq super-save-auto-save-when-idle t)))
 
 ;; Revert Dired and other buffers
 (setq global-auto-revert-non-file-buffers t)
@@ -266,7 +263,7 @@
 ;; Revert buffers when the underlying file has changed
 (global-auto-revert-mode 1)
 
-(dw/leader-key-def
+(dw/ctrl-c-keys
   "t"  '(:ignore t :which-key "toggles")
   "tw" 'whitespace-mode
   "tt" '(counsel-load-theme :which-key "choose theme"))
@@ -300,27 +297,19 @@
 
 (setq-default indent-tabs-mode nil)
 
-(setup (:pkg evil-nerd-commenter)
-  (:global "M-/" evilnc-comment-or-uncomment-lines))
+;; (setup (:pkg evil-nerd-commenter)
+;;   (:Global "M-/" evilnc-comment-or-uncomment-lines))
 
 (setup (:pkg ws-butler)
   (:hook-into text-mode prog-mode))
 
-(setup (:pkg parinfer :guix "emacs-parinfer-mode")
-  (:disabled)
-  (:hook-into clojure-mode
-              emacs-lisp-mode
-              common-lisp-mode
-              scheme-mode
-              lisp-mode)
-  (setq parinfer-extensions
-        '(defaults                 ; should be included.
-           pretty-parens           ; different paren styles for different modes.
-           smart-tab               ; C-b & C-f jump positions and smart shift with tab & S-tab.
-           smart-yank))            ; Yank behavior depend on mode.
-
-  (dw/leader-key-def
-    "tp" 'parinfer-toggle-mode))
+;; (setup (:pkg parinfer-rust-mode)
+  ;; (:hook-into clojure-mode
+              ;; emacs-lisp-mode
+              ;; common-lisp-mode
+              ;; scheme-mode
+              ;; lisp-mode)
+  ;; (setq parinfer-rust-auto-download t))
 
 (setup (:pkg origami :guix "emacs-origami-el")
   (:hook-into yaml-mode))
@@ -435,7 +424,7 @@ folder, otherwise delete a word"
 ;;(setup (:pkg app-launcher))
 
 (setup (:pkg avy)
-  (dw/leader-key-def
+  (dw/ctrl-c-keys
     "j"   '(:ignore t :which-key "jump")
     "jj"  '(avy-goto-char :which-key "jump to char")
     "jw"  '(avy-goto-word-0 :which-key "jump to word")
@@ -446,51 +435,74 @@ folder, otherwise delete a word"
   (:global "C-M-j" bufler-switch-buffer
            "C-M-k" bufler-workspace-frame-set)
   (:when-loaded
-   (progn
-     :config
-     (setf bufler-groups
-           (bufler-defgroups
-             ;; Subgroup collecting all named workspaces.
-            (group (auto-workspace))
-            ;; Subgroup collecting buffers in a projectile project.
-            (group (auto-projectile))
-            ;; Grouping browser windows
-            (group
-             (group-or "Browsers"
-                       (name-match "Vimb" (rx bos "vimb"))
-                       (name-match "Qutebrowser" (rx bos "Qutebrowser"))
-                       (name-match "Chromium" (rx bos "Chromium"))))
-            (group
-             (group-or "Chat"
-                       (mode-match "Telega" (rx bos "telega-"))))
-            (group
-             ;; Subgroup collecting all `help-mode' and `info-mode' buffers.
-             (group-or "Help/Info"
-                       (mode-match "*Help*" (rx bos (or "help-" "helpful-")))
-                       ;; (mode-match "*Helpful*" (rx bos "helpful-"))
-                       (mode-match "*Info*" (rx bos "info-"))))
-            (group
-             ;; Subgroup collecting all special buffers (i.e. ones that are not
-             ;; file-backed), except `magit-status-mode' buffers (which are allowed to fall
-             ;; through to other groups, so they end up grouped with their project buffers).
-             (group-and "*Special*"
-                        (name-match "**Special**"
-                                    (rx bos "*" (or "Messages" "Warnings" "scratch" "Backtrace" "Pinentry") "*"))
-                        (lambda (buffer)
-                          (unless (or (funcall (mode-match "Magit" (rx bos "magit-status"))
-                                               buffer)
-                                      (funcall (mode-match "Dired" (rx bos "dired"))
-                                               buffer)
-                                      (funcall (auto-file) buffer))
-                            "*Special*"))))
-            ;; Group remaining buffers by major mode.
-            (auto-mode))))))
+    (progn
+      :config
+      (bufler-defgroups
+        (group
+         ;; Subgroup collecting all named workspaces.
+         (auto-workspace))
+        (group
+         ;; Subgroup collecting all `help-mode' and `info-mode' buffers.
+         (group-or "*Help/Info*"
+                   (mode-match "*Help*" (rx bos "help-"))
+                   (mode-match "*Info*" (rx bos "info-"))))
+        (group
+         ;; Subgroup collecting all special buffers (i.e. ones that are not
+         ;; file-backed), except `magit-status-mode' buffers (which are allowed to fall
+         ;; through to other groups, so they end up grouped with their project buffers).
+         (group-and "*Special*"
+                    (lambda (buffer)
+                      (unless (or (funcall (mode-match "Magit" (rx bos "magit-status"))
+                                           buffer)
+                                  (funcall (mode-match "Dired" (rx bos "dired"))
+                                           buffer)
+                       q           (funcall (auto-file) buffer))
+                        "*Special*")))
+         (group
+          ;; Subgroup collecting these "special special" buffers
+          ;; separately for convenience.
+          (name-match "**Special**"
+                      (rx bos "*" (or "Messages" "Warnings" "scratch" "Backtrace") "*")))
+         (group
+          ;; Subgroup collecting all other Magit buffers, grouped by directory.
+          (mode-match "*Magit* (non-status)" (rx bos (or "magit" "forge") "-"))
+          (auto-directory))
+         ;; Subgroup for Helm buffers.
+         (mode-match "*Helm*" (rx bos "helm-"))
+         ;; Remaining special buffers are grouped automatically by mode.
+         (auto-mode))
+        ;; All buffers under "~/.emacs.d" (or wherever it is).
+        (dir user-emacs-directory)
+        (group
+         ;; Subgroup collecting buffers in `org-directory' (or "~/org" if
+         ;; `org-directory' is not yet defined).
+         (dir (if (bound-and-true-p org-directory)
+                  org-directory
+                "~/org"))
+         (group
+          ;; Subgroup collecting indirect Org buffers, grouping them by file.
+          ;; This is very useful when used with `org-tree-to-indirect-buffer'.
+          (auto-indirect)
+          (auto-file))
+         ;; Group remaining buffers by whether they're file backed, then by mode.
+         (group-not "*special*" (auto-file))
+         (auto-mode))
+        (group
+         ;; Subgroup collecting buffers in a projectile project.
+         (auto-projectile))
+        (group
+         ;; Subgroup collecting buffers in a version-control project,
+         ;; grouping them by directory.
+         (auto-project))
+        ;; Group remaining buffers by directory, then major mode.
+        (auto-directory)
+        (auto-mode)))))
 
 (setup (:pkg default-text-scale)
   (default-text-scale-mode))
 
 (setup (:pkg ace-window)
-  (:global "M-o" ace-window)
+  (:global "C-c w" ace-window)
   (:option aw-scope 'frame
            aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
            aw-minibuffer-flag t)
@@ -502,7 +514,7 @@ folder, otherwise delete a word"
 (setup (:pkg visual-fill-column)
   (setq visual-fill-column-width 110
         visual-fill-column-center-text t)
-  (:hook-into org-mode))
+  (:hook-into org-mode prog-mode))
 
 ;; (setq display-buffer-base-action
 ;;       '(display-buffer-reuse-mode-window
@@ -684,7 +696,7 @@ folder, otherwise delete a word"
 
 ;;(require 'org-protocol)
 
-(dw/leader-key-def
+(dw/ctrl-c-keys
   "o"   '(:ignore t :which-key "org mode")
 
   "oi"  '(:ignore t :which-key "insert")
@@ -881,7 +893,7 @@ _d_: date        ^ ^              ^ ^
 (setup (:pkg org-appear)
  (:hook-into org-mode))
 
-(setup (:pkg magit)
+(setup (:pkg magit :host github :repo "magit/magit")
   (:also-load magit-todos)
   (:global "C-M-;" magit-status)
   (:option magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
@@ -892,9 +904,7 @@ _d_: date        ^ ^              ^ ^
 (setup (:pkg magit-todos))
 
 (setup (:pkg git-link)
-  (setq git-link-open-in-browser t)
-  (dw/leader-key-def
-    "gL"  'git-link))
+  (setq git-link-open-in-browser t))
 
 (setup (:pkg git-gutter :straight git-gutter-fringe)
   (:hook-into text-mode prog-mode)
@@ -963,29 +973,23 @@ _d_: date        ^ ^              ^ ^
 
 (setup (:pkg projectile)
   (when (file-directory-p "~/Documents/projects")
-    (setq projectile-project-search-path '("~/Documents/projects")))
+    (setq projectile-project-search-path '("~/Documents/projects"))
   ;; (setq projectile-switch-project-action #'dw/switch-project-action)
+    (setq projectile-switch-project-action #'projectile-dired))
 
   (projectile-mode)
 
-  (:global "C-M-p" projectile-find-file
-           "C-c p" projectile-command-map)
-
-  (dw/leader-key-def
-    "pf"  'projectile-find-file
-    "ps"  'projectile-switch-project
-    "pF"  'consult-ripgrep
-    "pp"  'projectile-find-file
-    "pc"  'projectile-compile-project
-    "pd"  'projectile-dired))
+  (:global "C-c p" projectile-command-map))
 
 (setup (:pkg lsp-mode :straight t)
   (:hook-into rustic-mode c-mode c++-mode python-mode)
   (:bind "TAB" completion-at-point)
   (:option lsp-headerline-breadcrumb-enable nil
+           lsp-signature-auto-activate t
+           lsp-signature-render-documentation nil
            ;; what to use when checking on-save. "check" is default, I prefer clippy
            lsp-rust-analyzer-cargo-watch-command "clippy"
-           lsp-eldoc-render-all t
+           lsp-eldoc-render-all nil
            lsp-idle-delay 0.6
            ;; enable / disable the hints as you prefer:
            lsp-rust-analyzer-server-display-inlay-hints t
@@ -994,27 +998,17 @@ _d_: date        ^ ^              ^ ^
            lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil
            lsp-rust-analyzer-display-closure-return-type-hints t
            lsp-rust-analyzer-display-parameter-hints nil
-           lsp-rust-analyzer-display-reborrow-hints nil)
-
-  (dw/leader-key-def
-    "l" '(:ignore t :which-key "lsp")
-    "ld" 'xref-find-definitions
-    "lr" 'xref-find-references
-    "ln" 'lsp-ui-find-next-reference
-    "lp" 'lsp-ui-find-prev-reference
-    "ls" 'counsel-imenu
-    "le" 'lsp-ui-flycheck-list
-    "lS" 'lsp-ui-sideline-mode
-    "lX" 'lsp-execute-code-action))
+           lsp-rust-analyzer-display-reborrow-hints nil
+           lsp-enable-which-key-integration t
+           lsp-keymap-prefix "C-c l"))
 
 (setup (:pkg lsp-ui :straight t)
   (:hook-into lsp-mode)
-  (:when-loaded
-    (progn
-      (setq lsp-ui-sideline-enable t)
-      (setq lsp-ui-sideline-show-hover nil)
-      (setq lsp-ui-doc-position 'bottom)
-      (lsp-ui-doc-show))))
+  (:option lsp-ui-peek-always-show 1
+           lsp-ui-slideline-enable nil
+           lsp-ui-slideline-show-hover nil
+           lsp-ui-doc-enabled nil
+           lsp-ui-doc-position 'bottom))
 
 (setup (:pkg dap-mode :straight t)
   ;; Assuming that `dap-debug' will invoke all this
@@ -1058,11 +1052,11 @@ _d_: date        ^ ^              ^ ^
            [remap describe-command] helpful-command
            [remap describe-key] helpful-key))
 
-(dw/leader-key-def
+(dw/ctrl-c-keys
   "e"   '(:ignore t :which-key "eval")
   "eb"  '(eval-buffer :which-key "eval buffer"))
 
-(dw/leader-key-def
+(dw/ctrl-c-keys
   :keymaps '(visual)
   "er" '(eval-region :which-key "eval region"))
 
@@ -1201,7 +1195,7 @@ _d_: date        ^ ^              ^ ^
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
-(dw/leader-key-def
+(dw/ctrl-c-keys
   "SPC" 'eshell)
 
 (with-eval-after-load 'esh-opt
