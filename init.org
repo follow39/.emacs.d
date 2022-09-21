@@ -630,11 +630,6 @@ Emacs can be prompted for the PIN of GPG private keys, we just need to set epa-p
 ** Complition in regions with corfu
 #+begin_src emacs-lisp
   (setup (:pkg corfu :host github :repo "minad/corfu")
-    (:with-map corfu-map
-      (:bind "C-j" corfu-next
-             "C-k" corfu-previous
-             "TAB" corfu-insert
-             "C-f" corfu-insert))
     (:option corfu-cycle t)
     (global-corfu-mode))
 #+end_src

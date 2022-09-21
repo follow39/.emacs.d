@@ -347,11 +347,6 @@ folder, otherwise delete a word"
   (custom-set-faces '(vertico-current ((t (:background "#3a3f5a"))))))
 
 (setup (:pkg corfu :host github :repo "minad/corfu")
-  (:with-map corfu-map
-    (:bind "C-j" corfu-next
-           "C-k" corfu-previous
-           "TAB" corfu-insert
-           "C-f" corfu-insert))
   (:option corfu-cycle t)
   (global-corfu-mode))
 
