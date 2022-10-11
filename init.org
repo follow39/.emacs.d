@@ -1,4 +1,5 @@
 #+TITLE: Emacs configuration
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes
 
 * Preface
 
@@ -432,10 +433,7 @@ Different platforms need different default font sizes, and Fira Mono is currentl
        doom-modeline-bar-width 6
        doom-modeline-lsp t
        doom-modeline-github nil
-       doom-modeline-mu4e nil
-       doom-modeline-irc nil
        doom-modeline-minor-modes t
-       doom-modeline-persp-name nil
        doom-modeline-buffer-file-name-style 'truncate-except-project
        doom-modeline-major-mode-icon nil)
     (custom-set-faces '(mode-line ((t (:height 0.85))))
@@ -571,12 +569,13 @@ Emacs can be prompted for the PIN of GPG private keys, we just need to set epa-p
 ** Use parinfer for lispy languages
 #+begin_src emacs-lisp
   ;; (setup (:pkg parinfer-rust-mode)
-    ;; (:hook-into clojure-mode
-                ;; emacs-lisp-mode
-                ;; common-lisp-mode
-                ;; scheme-mode
-                ;; lisp-mode)
-    ;; (setq parinfer-rust-auto-download t))
+  ;;   (:hook-into clojure-mode
+  ;;               emacs-lisp-mode
+  ;;               common-lisp-mode
+  ;;               scheme-mode
+  ;;               lisp-mode)
+  ;;   ;; (setq parinfer-rust-auto-download t)
+  ;;   )
 #+end_src
 
 ** Origami.el for folding
@@ -1363,30 +1362,43 @@ Emacs’ default buffer placement algorithm is pretty disruptive if you like set
     (:hook-into rustic-mode c-mode c++-mode python-mode)
     (:bind "TAB" completion-at-point)
     (:option lsp-headerline-breadcrumb-enable nil
-             lsp-signature-auto-activate t
-             lsp-signature-render-documentation nil
-             ;; what to use when checking on-save. "check" is default, I prefer clippy
-             lsp-rust-analyzer-cargo-watch-command "clippy"
-             lsp-eldoc-render-all nil
-             lsp-idle-delay 0.6
-             ;; enable / disable the hints as you prefer:
-             lsp-rust-analyzer-server-display-inlay-hints t
-             lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
-             lsp-rust-analyzer-display-chaining-hints t
-             lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil
-             lsp-rust-analyzer-display-closure-return-type-hints t
-             lsp-rust-analyzer-display-parameter-hints nil
-             lsp-rust-analyzer-display-reborrow-hints nil
+             lsp-modeline-diagnostics-enable t
              lsp-enable-which-key-integration t
-             lsp-keymap-prefix "C-c l"))
+             lsp-keymap-prefix "C-c l"
+             lsp-idle-delay 0.6
+
+             ;; documentation
+             ;; lsp-signature-auto-activate nil
+             ;; lsp-signature-render-documentation nil
+             ;; lsp-eldoc-enable-hover nil
+             ;; lsp-eldoc-render-all nil
+             ;; eldoc-idle-delay 3
+             ;; lsp-eldoc-hook nil
+
+             ;; rust
+             ;; lsp-rust-analyzer-cargo-watch-command "clippy"
+             ;; lsp-rust-analyzer-server-display-inlay-hints nil
+             ;; lsp-rust-analyzer-join-lines t
+             ;; lsp-rust-analyzer-auto-import-enable nil
+             ;; lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
+             ;; lsp-rust-analyzer-display-chaining-hints t
+             ;; lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil
+             ;; lsp-rust-analyzer-display-closure-return-type-hints t
+             ;; lsp-rust-analyzer-display-parameter-hints t
+             ;; lsp-rust-analyzer-display-reborrow-hints nil
+             ))
 
   (setup (:pkg lsp-ui :straight t)
     (:hook-into lsp-mode)
     (:option lsp-ui-peek-always-show 1
+             lsp-ui-peek-show-directory t
              lsp-ui-slideline-enable nil
              lsp-ui-slideline-show-hover nil
              lsp-ui-doc-enabled nil
-             lsp-ui-doc-position 'bottom))
+             lsp-ui-doc-delay 3
+             lsp-ui-doc-show-with-cursor nil
+             lsp-ui-doc-position 'at-point
+             ))
 #+end_src
 
 *** DAP
@@ -1398,26 +1410,26 @@ Emacs’ default buffer placement algorithm is pretty disruptive if you like set
       (dap-ui-mode 1)
       (dap-tooltip-mode 1))
 
-      (require 'dap-lldb)
-      (require 'dap-gdb-lldb)
-      ;; installs .extension/vscode
-      (dap-gdb-lldb-setup)
-      (dap-register-debug-template
-       "Rust::LLDB Run Configuration"
-       (list :type "lldb"
-             :request "launch"
-             :name "LLDB::Run"
-             :gdbpath "rust-lldb"
-             ;; uncomment if lldb-mi is not in PATH
-             ;; :lldbmipath "/usr/local/bin/lldb-mi"
-             )))
+    (require 'dap-cpptools)
+    (require 'dap-lldb)
+    (require 'dap-gdb-lldb)
+    ;; installs .extension/vscode
+    (dap-gdb-lldb-setup)
+    (dap-register-debug-template
+     "Rust::LLDB Run Configuration"
+     (list :type "lldb"
+           :request "launch"
+           :name "LLDB::Run"
+           :gdbpath "rust-lldb"
+           ;; uncomment if lldb-mi is not in PATH
+           ;; :lldbmipath "/usr/local/bin/lldb-mi"
+           )))
 #+end_src
 
 *** C/C++
 #+begin_src emacs-lisp
   (setup (:pkg ccls)
     (setq ccls-executable "ccls")
-    (:hook lsp)
     (:hook-into c-mode c++-mode objc-mode cuda-mode))
 #+end_src
 
@@ -1425,7 +1437,10 @@ Emacs’ default buffer placement algorithm is pretty disruptive if you like set
 #+begin_src emacs-lisp
   (setup (:pkg rustic)
     (:file-match "\\.rs\\'")
-    (setq rustic-format-on-save t))
+    (:option rustic-format-on-save t
+             rustic-lsp-setup-p t
+             ;; rustic-lsp-client 'eglot
+             ))
 #+end_src
 
 *** Emacs lisp
@@ -1453,9 +1468,9 @@ Emacs’ default buffer placement algorithm is pretty disruptive if you like set
 
 *** Python
 #+begin_src emacs-lisp
-  (setup (:pkg lsp-pyright :host github :repo "emacs-lsp/lsp-pyright")
-    (:hook lsp)
-    (:hook-into python-mode))
+  ;; (setup (:pkg lsp-pyright :host github :repo "emacs-lsp/lsp-pyright")
+  ;;   (:hook lsp)
+  ;;   (:hook-into python-mode))
 #+end_src
 
 *** YAML
