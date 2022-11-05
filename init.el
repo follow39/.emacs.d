@@ -547,10 +547,10 @@ folder, otherwise delete a word"
 
   (autoload 'dired-omit-mode "dired-x")
 
-  (add-hook 'dired-load-hook
-            (lambda ()
-              (interactive)
-              (dired-collapse-mode)))
+  ;; (add-hook 'dired-load-hook
+            ;; (lambda ()
+              ;; (interactive)
+              ;; (dired-collapse-mode)))
 
   (add-hook 'dired-mode-hook
             (lambda ()
@@ -967,7 +967,7 @@ _d_: date        ^ ^              ^ ^
 (setup (:pkg projectile)
   (when (file-directory-p "~/Documents/projects")
     (setq projectile-project-search-path '("~/Documents/projects"))
-  ;; (setq projectile-switch-project-action #'dw/switch-project-action)
+    ;; (setq projectile-switch-project-action #'dw/switch-project-action)
     (setq projectile-switch-project-action #'projectile-dired))
 
   (projectile-mode)
@@ -1038,16 +1038,18 @@ _d_: date        ^ ^              ^ ^
          ;; :lldbmipath "/usr/local/bin/lldb-mi"
          )))
 
-(setup (:pkg ccls)
-  (setq ccls-executable "ccls")
-  (:hook-into c-mode c++-mode objc-mode cuda-mode))
+(setup (:pkg bazel :host github :repo "bazelbuild/emacs-bazel-mode"))
 
-(setup (:pkg rustic)
-  (:file-match "\\.rs\\'")
-  (:option rustic-format-on-save t
-           rustic-lsp-setup-p t
-           ;; rustic-lsp-client 'eglot
-           ))
+;; (setup (:pkg ccls)
+;;   (setq ccls-executable "ccls")
+;;   (:hook-into c-mode c++-mode objc-mode cuda-mode))
+
+;; (setup (:pkg rustic)
+;;   (:file-match "\\.rs\\'")
+;;   (:option rustic-format-on-save t
+;;            rustic-lsp-setup-p t
+;;            ;; rustic-lsp-client 'eglot
+;;            ))
 
 (setup emacs-lisp-mode
   (:hook flycheck-mode))
@@ -1078,6 +1080,9 @@ _d_: date        ^ ^              ^ ^
 
 (setup (:pkg flycheck)
   (:hook-into lsp-mode))
+
+(setup (:pkg flycheck-vale)
+  (:option flycheck-vale-enabled t))
 
 (setup (:pkg smartparens)
   (:hook-into prog-mode))
